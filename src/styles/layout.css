@@ -148,6 +148,8 @@ button:active:not(:disabled) {
   min-height: 100dvh;
 }
 .sidebar {
+  --sidebar-nav-gutter: 19px;
+  --sidebar-nav-icon-size: 18px;
   position: sticky;
   top: 0;
   height: 100dvh;
@@ -206,8 +208,8 @@ button:active:not(:disabled) {
 }
 .nav-title > svg:first-child,
 .secondary-nav svg {
-  width: 18px;
-  height: 18px;
+  width: var(--sidebar-nav-icon-size);
+  height: var(--sidebar-nav-icon-size);
   color: #627693;
 }
 .nav-title strong {
@@ -383,7 +385,7 @@ button:active:not(:disabled) {
   display: grid;
   gap: var(--space-1);
   border-top: 1px solid var(--line);
-  margin: 18px 19px 0;
+  margin: 18px var(--sidebar-nav-gutter) 0;
   padding: 13px 0;
 }
 .secondary-nav button {
@@ -402,22 +404,26 @@ button:active:not(:disabled) {
   color: #255bc2;
 }
 .side-bottom {
-  padding: var(--space-2) var(--space-5)
+  padding: var(--space-2) var(--sidebar-nav-gutter)
     calc(var(--space-2) + env(safe-area-inset-bottom));
   border-top: var(--border-width) solid var(--line);
   background: #fcfdff;
 }
 .account {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--sidebar-nav-icon-size) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
   text-align: left;
   width: 100%;
   border: 0;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2);
   margin-top: 0;
   border-radius: var(--radius-control);
   min-height: var(--control-height);
+}
+.account > .avatar {
+  justify-self: center;
 }
 .avatar {
   flex: none;
