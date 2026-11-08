@@ -402,8 +402,8 @@ button:active:not(:disabled) {
   color: #255bc2;
 }
 .side-bottom {
-  padding: var(--space-3) var(--space-5)
-    calc(var(--space-3) + env(safe-area-inset-bottom));
+  padding: var(--space-2) var(--space-5)
+    calc(var(--space-2) + env(safe-area-inset-bottom));
   border-top: var(--border-width) solid var(--line);
   background: #fcfdff;
 }
@@ -414,10 +414,10 @@ button:active:not(:disabled) {
   text-align: left;
   width: 100%;
   border: 0;
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   margin-top: 0;
   border-radius: var(--radius-control);
-  min-height: calc(var(--control-height) + var(--space-4));
+  min-height: var(--control-height);
 }
 .avatar {
   flex: none;
