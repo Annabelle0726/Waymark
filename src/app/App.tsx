@@ -28,7 +28,7 @@ import {
   Compass,
   AlertCircle,
 } from 'lucide-react'
-import { api } from './api'
+import { api } from '../services/api'
 import {
   fields,
   fieldKeys,
@@ -40,10 +40,13 @@ import {
   type User,
   type Upload,
   type Save,
-} from './model'
-import { Dialog, JobForm, UpdateForm, MaterialForm, Auth, Form } from './Forms'
-import Notes from './Notes'
-import JobDetail, { StatusPill } from './JobDetail'
+} from '../domain/workspace'
+import { Dialog, Form } from '../components/forms/Forms'
+import { JobForm, UpdateForm } from '../features/jobs/JobForms'
+import { MaterialForm } from '../features/materials/MaterialForm'
+import { Auth } from '../features/auth/Auth'
+import Notes from '../features/notes/Notes'
+import JobDetail, { StatusPill } from '../features/jobs/JobDetail'
 type Page = 'jobs' | 'general' | 'materials' | 'settings'
 type Modal =
   | ''
@@ -239,7 +242,7 @@ export default function App() {
   if (!ready)
     return (
       <main className="center-state">
-        <img src="/mark.svg" width="48" alt="Waymark" />
+        <img src="/brand/mark.svg" width="48" alt="Waymark" />
         <h2>{loadError ? '工作空间加载失败' : '正在检查登录状态…'}</h2>
         {loadError && (
           <>
@@ -297,7 +300,7 @@ export default function App() {
         aria-label="工作空间导航"
       >
         <div className="brand-area">
-          <img src="/mark.svg" alt="" />
+          <img src="/brand/mark.svg" alt="" />
           <div>
             <div className="brand-word">Waymark</div>
             <span>个人求职工作空间</span>

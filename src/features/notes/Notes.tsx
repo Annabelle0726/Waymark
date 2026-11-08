@@ -14,7 +14,7 @@ import {
   Check,
   Circle,
 } from 'lucide-react'
-import { prepareDraft, type Job, type Material } from './model'
+import { prepareDraft, type Job, type Material } from '../../domain/workspace'
 
 function Preview({ value }: { value: string }) {
   return (

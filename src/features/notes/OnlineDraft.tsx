@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { api } from './api'
-import { Dialog, Form } from './Forms'
-import { type Job } from './model'
+import { api } from '../../services/api'
+import { Dialog, Form } from '../../components/forms/Forms'
+import { type Job } from '../../domain/workspace'
 
 export default function OnlineDraft({
   job,

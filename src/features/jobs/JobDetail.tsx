@@ -13,8 +13,14 @@ import {
   NotebookText,
   Layers3,
 } from 'lucide-react'
-import { fields, fieldKeys, stamp, tags, type Job } from './model'
-import RouteMap from './RouteMap'
+import {
+  fields,
+  fieldKeys,
+  stamp,
+  tags,
+  type Job,
+} from '../../domain/workspace'
+import RouteMap from '../../components/brand/RouteMap'
 export function StatusPill({ status }: { status: string }) {
   return (
     <span

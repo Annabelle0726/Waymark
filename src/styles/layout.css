@@ -2,7 +2,9 @@
   box-sizing: border-box;
 }
 :root {
-  font-family: 'Microsoft YaHei UI', 'PingFang SC', 'Noto Sans CJK SC', system-ui, sans-serif;
+  font-family:
+    'Microsoft YaHei UI', 'PingFang SC', 'Noto Sans CJK SC', system-ui,
+    sans-serif;
   color: #1b2940;
   background: #f5f7fb;
   font-synthesis: none;

@@ -6,10 +6,12 @@
 !vite.config.ts
 !index.html
 !public/
-!public/mark.svg
+!public/brand/
+!public/brand/*.svg
 !src/
-!src/*.ts
-!src/*.tsx
-!src/*.css
+!src/**/
+!src/**/*.ts
+!src/**/*.tsx
+!src/**/*.css
 !server/
 !server/*.mjs

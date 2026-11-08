@@ -1,0 +1,12 @@
+:root {
+  --blue: #206b9a;
+  --ink: #123a53;
+  --muted: #6a7b86;
+  --line: #e4dfd5;
+  --pale: #eef6f8;
+  --gold: #c7a15c;
+  --paper: #fbf8f3;
+  --display-font: Georgia, 'Songti SC', 'STSong', 'SimSun', serif;
+  color: var(--ink);
+  background: var(--paper);
+}

@@ -1,0 +1,231 @@
+body {
+  background: var(--paper);
+}
+.app-shell {
+  background:
+    radial-gradient(ellipse at 100% 0, #e8f2f5aa, transparent 60%), var(--paper);
+}
+.sidebar,
+.side-bottom {
+  background: #fffdf9;
+}
+.brand-area {
+  gap: 8px;
+  padding-left: 20px;
+  padding-right: 18px;
+}
+.brand-area img {
+  width: 58px;
+  height: 43px;
+  object-fit: contain;
+}
+.brand-word,
+.brand {
+  font-family: var(--display-font);
+  letter-spacing: -0.8px;
+  font-weight: 700;
+  color: #103f5d;
+}
+.brand-area div > span {
+  color: #74828a;
+  letter-spacing: 1px;
+}
+.primary {
+  background: linear-gradient(155deg, #5b9ec5, #1e6697);
+  border: 1px solid #4285af;
+  box-shadow:
+    inset 0 1px 0 #ffffff3d,
+    0 3px 7px #22476115;
+}
+.primary:hover:not(:disabled) {
+  background: linear-gradient(155deg, #478db9, #195b88);
+}
+.outline {
+  border-color: #c6d0d5;
+  background: #fffdfa;
+}
+.outline:hover {
+  background: #edf5f7;
+}
+.topbar {
+  background: #fffdf9c9;
+  border-bottom-color: #e6dcc9;
+}
+.environment {
+  background: #fcf7ea;
+  color: #846b39;
+  border-color: #e8dabb;
+}
+.page-heading h2 {
+  font-synthesis: weight;
+  font-family: var(--display-font);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.heading-dash {
+  background: var(--gold);
+  width: 2px;
+}
+.search {
+  background: #f5f5f1;
+  border-color: #e5e3dc;
+}
+.job-item.active {
+  background: linear-gradient(120deg, #e6f3f7, #f0f6f6);
+  border-color: #c0d6df;
+}
+.job-select:hover,
+.active .job-select:hover {
+  background: #e9f3f5;
+}
+.active .job-select strong {
+  color: #18547b;
+}
+.side-details {
+  border-color: #d2e2e7;
+  color: #607f91;
+}
+.secondary-nav button:hover,
+.setting-link:hover,
+.highlight {
+  background: #edf4f5;
+  color: #17577c;
+}
+.company-icon.tone0 {
+  background: #deedf3;
+  color: #246e97;
+}
+.section-icon {
+  background: #e8f3f6;
+  color: #216183;
+}
+.card,
+.job-cover {
+  background: #fffdfa;
+  border-color: #e3ddd2;
+  box-shadow: 0 4px 14px #6b593509;
+}
+.cover-main {
+  color: #103f5d;
+  background: #f0f6f7;
+}
+.cover-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/brand/watercolor.svg') center 60% / cover;
+  z-index: -1;
+  opacity: 0.85;
+}
+.route-map {
+  display: none;
+}
+.cover-copy {
+  width: 100%;
+  padding-top: 24px;
+  padding-bottom: 25px;
+}
+.cover-copy h1 {
+  font-synthesis: weight;
+  font-family: var(--display-font);
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.cover-eyebrow {
+  border-color: #c9d9df;
+  background: #ffffffb8;
+  color: #3c738b;
+}
+.cover-meta {
+  color: #426b7f;
+}
+.cover-meta i {
+  background: #b9cbd1;
+}
+.facts {
+  background: #fffefa;
+  border-top: 1px solid #e1e6e3;
+}
+.facts > div:first-child strong {
+  color: #17537c;
+}
+.tags span {
+  background: #edf5f7;
+  border-color: #d5e4e9;
+  color: #2e6680;
+}
+.source-foot {
+  background: #fafaf6;
+}
+.notes .card-head {
+  background: linear-gradient(110deg, #edf7f8, #fffdfa);
+  border-bottom-color: #d9e4e4;
+}
+.editor-tools {
+  background: #f9faf7;
+}
+.editor-tools .selected {
+  background: #e4f0f3;
+  color: #246584;
+}
+.editor-tools .draft-btn {
+  color: #2c6a89;
+}
+.note-input,
+.note-preview {
+  background: #fffefa;
+}
+.note-input:focus {
+  outline-color: #a5c8d4;
+}
+.save-btn {
+  color: #1e6088;
+  border-color: #c3d5dd;
+}
+.avatar {
+  background: #e3f0f3;
+  color: #376c85;
+}
+.dialog,
+.dialog-head {
+  background: #fffdfa;
+}
+.form-body input,
+.form-body textarea,
+.form-body select {
+  background: #fffdfa;
+  border-color: #c9d1d3;
+}
+.form-body input:focus,
+.form-body textarea:focus,
+.form-body select:focus {
+  border-color: #70a5bf;
+  box-shadow: 0 0 0 3px #e5f0f3;
+}
+.mode-row {
+  background: #eff2ef;
+}
+.mode-row .chosen {
+  background: #fffdfa;
+  color: #236082;
+}
+.event.latest > i {
+  background: #3a88a8;
+  border-color: #3a88a8;
+  box-shadow: 0 0 0 3px #e3f0f4;
+}
+.status-pill.sent {
+  background: #e4f0f6;
+  color: #356b88;
+}
+@media (max-width: 760px) {
+  .cover-copy {
+    padding: 21px 18px;
+  }
+  .cover-copy h1 {
+    font-size: 27px;
+  }
+  .sidebar {
+    background: #fffdf9;
+  }
+}

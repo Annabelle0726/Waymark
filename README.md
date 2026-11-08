@@ -114,4 +114,4 @@ npm ci
 npm run dev
 ```
 
-开发地址为 [本机开发工作台](http://127.0.0.1:5173)。`npm run build` 执行 TypeScript 检查与前端构建，`npm start` 使用构建产物运行同源服务。前端与数据模型在 `src/`，后端在 `server/`。前后端通过 JSON 接口交换带版本号的工作空间，岗位更新与新增附件使用同一 SQLite 事务提交。
+开发地址为 [本机开发工作台](http://127.0.0.1:5173)。`npm run build` 执行 TypeScript 检查与前端构建，`npm start` 使用构建产物运行同源服务。前端按 app、features、components、domain、services 和 styles 目录组织，主题样式位于 `src/styles/theme/`，品牌资源位于 `public/brand/`，后端在 `server/`。主题与维护规范记录在 `agent.md` 与 `claude.md`。前后端通过 JSON 接口交换带版本号的工作空间，岗位更新与新增附件使用同一 SQLite 事务提交。
