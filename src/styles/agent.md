@@ -57,6 +57,8 @@
 
 ## 6. Forms, editors and interview questions
 
+- Registration and sign-in MUST expose a required, clearly labelled phone field using `type="tel"` and `autocomplete="tel"`. Email MUST NOT replace the phone field. Keep password authentication and accessible password visibility controls. Any legacy-email entry MUST be labelled as a one-time phone-binding flow, preserve account data and still require the phone number. Never label an unverified phone as verified or show a simulated SMS action.
+
 - Inputs MUST be 40–44px high on desktop and 44–48px on mobile. Default to `--control-height` (44px). Keep labels 4–8px from fields. Announce errors through a live region (or `role="alert"`); reserve no empty error row.
 - Authentication modes MUST switch in place, retain the email, clear passwords and errors, and prevent duplicate submissions. Keep autofill enabled. The icon, input and visibility button MUST share one field surface. MUST NOT animate autofill background replacement.
 - Document textareas MUST grow to fit the text, hide internal scrollbars and resize handles, and show a border or outline on focus only. Keep empty blocks compact. Collapse long reading content by default, with an explicit, keyboard-accessible expand action. Never truncate the stored text.
