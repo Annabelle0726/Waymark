@@ -22,7 +22,6 @@ export function readPreparation(value: string): Preparation {
       parsed.format === 'waymark-preparation-v1' &&
       Array.isArray(parsed.sections) &&
       parsed.sections.every(section) &&
-      parsed.sections[0]?.id === 'intro' &&
       Array.isArray(parsed.reviews) &&
       parsed.reviews.every(
         (g: ReviewGroup) =>
