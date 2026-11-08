@@ -448,6 +448,7 @@ button:active:not(:disabled) {
   color: var(--muted);
 }
 .workspace {
+  --workspace-header-gutter: 35px;
   min-width: 0;
 }
 .topbar {
@@ -457,7 +458,7 @@ button:active:not(:disabled) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 35px;
+  padding: 0 var(--workspace-header-gutter);
 }
 .crumb,
 .environment {
@@ -1175,6 +1176,9 @@ button:active:not(:disabled) {
   }
 }
 @media (max-width: 1150px) {
+  .workspace {
+    --workspace-header-gutter: 20px;
+  }
   .app-shell {
     grid-template-columns: 232px minmax(0, 1fr);
   }
@@ -1182,7 +1186,7 @@ button:active:not(:disabled) {
     padding: 20px;
   }
   .topbar {
-    padding: 0 20px;
+    padding: 0 var(--workspace-header-gutter);
   }
   .detail-grid {
     gap: 13px;
