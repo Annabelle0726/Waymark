@@ -2,7 +2,7 @@
 
 ## Working agreement
 
-- All project-owned Markdown MUST be written in English, including headings, examples, checklists and command comments. Keep the product's existing UI language.
+- The root README.md MUST be written in Chinese. All other project-owned Markdown MUST be written in English, including headings, examples, checklists and command comments. Keep the product's existing UI language.
 - Work in the existing primary checkout. Fetch upstream before starting. Preserve staged and unstaged work; publish only the requested changes.
 - Waymark is a local React, TypeScript, Node.js and SQLite application started with Docker Compose.
 - Keep keys, private configuration, databases, uploaded files, backups and logs out of Git, frontend assets and image build contexts.
@@ -38,4 +38,4 @@ Keep only the entry point and environment declarations at the source root. Reuse
 
 ## Verification
 
-Run `npm run build` for implementation changes. Check the production entry with `docker compose up -d --build --wait` when runtime or packaging changes. For editor changes, test saving, failure recovery, focus mode and refresh. For storage changes, verify that an account can access its existing records and download original attachments after a container rebuild. For documentation-only changes, check paths, links, technical values and the English-language requirement.
+Run `npm run build` for implementation changes. Check the production entry with `docker compose up -d --build --wait` when runtime or packaging changes. For editor changes, test saving, failure recovery, focus mode and refresh. For storage changes, verify that an account can access its existing records and download original attachments after a container rebuild. For documentation-only changes, check paths, links, technical values and the language required for each file.

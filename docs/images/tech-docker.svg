@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="94" height="34" viewBox="0 0 94 34" role="img" aria-label="Docker">
+  <title>Docker</title>
+  <rect x=".5" y=".5" width="93" height="33" rx="6" fill="#f7fafb" stroke="#d5e2e7"/>
+  <g fill="#247cb2"><rect x="10" y="14" width="4" height="4"/><rect x="15" y="14" width="4" height="4"/><rect x="20" y="14" width="4" height="4"/><rect x="15" y="9" width="4" height="4"/><rect x="20" y="9" width="4" height="4"/><rect x="20" y="4" width="4" height="4"/><path d="M7 19h18q4 0 5-3l-1-3q3 0 4 3l3 .5q-1 3-5 3.6-2.5 7-12 7.4Q9 28 7 19Z"/></g>
+  <text x="40" y="22" font-family="system-ui,Segoe UI,sans-serif" font-weight="600" font-size="13" fill="#163d50">Docker</text>
+</svg>

@@ -1,128 +1,146 @@
-# Waymark personal job workspace
+<p align="center">
+  <img src="docs/images/waymark-cover.svg" width="100%" alt="Waymark 个人求职工作空间，山海与航标封面。">
+</p>
+<p align="center">
+  <img src="docs/images/tech-typescript.svg" alt="TypeScript" height="34">
+  <img src="docs/images/tech-javascript.svg" alt="JavaScript" height="34">
+  <img src="docs/images/tech-react.svg" alt="React" height="34">
+  <img src="docs/images/tech-node.svg" alt="Node.js" height="34">
+  <img src="docs/images/tech-sqlite.svg" alt="SQLite" height="34">
+  <img src="docs/images/tech-docker.svg" alt="Docker" height="34">
+</p>
 
-Waymark runs on your computer. React and TypeScript provide the web interface. Node.js and Express handle authentication, files and account-scoped workspace requests. One Docker container serves the website and API. SQLite stores records and attachment bytes on the host.
+# Waymark 是什么？
 
-## Start locally
+收到面试邀请时，你可能想回头看看当时投的是哪个岗位，招聘原文里最看重什么，上一次沟通又谈到了哪里。**Waymark 是运行在自己电脑上的求职工作空间**。你可以从不同渠道收下岗位，把原文、进度和面试笔记放进同一份档案。同一家公司投了两个职位，也能分别跟进。
 
-Install Git and Docker Desktop with Linux containers on Windows, or Docker Engine with Docker Compose v2 or later supporting `--wait`. The first build downloads the base image, packages and OCR dependencies. Once built, the local workspace runs offline.
+第一次打开先注册或登录，进入的是自己的空工作区。收录岗位、识别截图、写笔记和管理简历都可以在本机完成。想先试用，可以直接跳到[本地启动](#本地启动)。
 
-From a new computer, clone the repository. For an existing checkout, open PowerShell in the project directory.
+## 从岗位原文开始
+
+在左侧选择 **添加岗位**，关联招聘来源，再上传截图、粘贴文字、保存链接或手动填写。截图可拖入或从剪贴板粘贴，本机识别简体中文和英文。你可以对照原图检查识别出的字段，再确认保存。链接保留原地址，薪资、远程要求和投递状态缺少依据时显示「待确认」。
+
+<p align="center"><img src="docs/images/intake.png" width="680" alt="添加岗位的实际界面，展示四种录入方式、招聘来源和空的截图上传区。"></p>
+
+收到回复后，展开侧栏里的岗位就能看到平台、当前进度和更新时间。打开岗位可记录这次沟通的来源与内容，也能回看之前的变更。截图单张上限为 10 MB，一次最多新增 40 MB。[截图录入细节（英文）](docs/screenshot-intake.md)
+
+## 为下一场面试做准备
+
+自我介绍、经常被问到的技术问题，适合放在 **通用面试准备**。只针对某个职位的要求、面试官提出的问题和自己的复盘，则写进该岗位的专属笔记。正文可分节，复习题可按主题分组，每道题单独保存答案。长文可以放大编辑，返回后继续写同一份内容。
+
+<p align="center"><img src="docs/images/preparation.png" width="790" alt="通用面试准备的实际预览。项目复盘和向面试官提问分成两组，只展示练习题，未填写个人经历或答案。"></p>
+
+**我的资料**集中保存简历、证书和其他附件，可重命名、写摘要、预览、下载或删除。单个文件上限为 10 MB。PDF、DOCX、常见图片和文本可直接预览，遇到复杂排版可下载原件查看。
+
+## 求职助理如何使用消息
+
+打开右下角的 **求职助理**，可以查看本机进度和最近导入的消息。比如收到一条面试邀请，只有消息明确指向已关联的平台、公司、职位和阶段时，助理才会建议更新。你确认后，消息原文和来源会一起记入岗位历史。仅在 Waymark 里填写平台名称，不会获得读取该平台私人投递记录的权限。
+
+<p align="center"><img src="docs/images/assistant.png" width="680" alt="助理解读前的实际界面。输入框中只有待整理的面试问题，点击确认后才发送给 DeepSeek。"></p>
+
+| 操作 | 数据去向 |
+| --- | --- |
+| 收录岗位、识别截图、管理资料、匹配导入消息 | 由本机服务处理，核心功能无需 API 密钥。 |
+| 点击「确认联网搜索」 | 将你确认的搜索词发给博查，返回公开网页。公开搜索结果不会写入个人投递进度。 |
+| 点击「确认发送并解读」 | 将预览框里的摘录和任务说明发给 DeepSeek，最多 6,000 字。发送前可以删去联系方式或不想分享的段落。系统不会自动附上整份简历。 |
+| 开启 iPhone 提醒 | 通过苹果推送服务发送通用提醒。锁屏提醒不包含公司、手机号或消息正文。 |
+
+## 本地启动
+
+准备好 Git 和支持 `docker compose up --wait` 的 Docker Compose。Windows 可使用 Docker Desktop 的 Linux 容器模式。首次构建会下载基础镜像、依赖和文字识别工具。如果已有项目目录，直接在该目录执行启动命令。
 
 ```powershell
 git clone https://github.com/Annabelle0726/Waymark.git
 cd Waymark
-```
-
-```powershell
 docker compose up -d --build --wait
-docker compose ps
 ```
 
-Open the [local workspace](http://127.0.0.1:4173). The published port accepts loopback connections. Sign in or register for an empty personal workspace. A valid session restores your workspace on refresh. Signing out returns you to authentication.
+打开 **[本机工作空间](http://127.0.0.1:4173)**，用昵称、手机号和密码注册。手机号是本机登录标识，当前未接入短信验证。默认仅本机可访问。网页和接口由同一个容器提供，SQLite 数据库及附件保存在电脑上。更改端口时，在根目录的本地 `.env` 中设置 `WAYMARK_PORT=4174` 后重新启动。
 
-Compose mounts `data/` for storage and `private/` read-only for configuration. On native Linux, create both directories first. Container UID 1000 needs write access to `data/` and read access to `private/backend.env` if present. To use a different port, set `WAYMARK_PORT=4174` in the local root `.env` file and repeat the startup command.
+在原生 Linux 上，请先创建 `data/` 和 `private/`，确保容器用户（UID 1000）能写入数据目录，并能读取已配置的密钥文件。从只有邮箱的旧版本升级前，请先备份。没有手机号的旧账号需要单独处理迁移。
 
-## Using the workspace
+### 日常使用与更新
 
-- **Jobs.** Each position has its own ID, even at the same company. Expand a sidebar entry to see its platform, progress and update time. Add a job through manual entry, a link, pasted text or screenshots. Review the fields before saving.
-- **Sources.** The original text, link, screenshot or manual snapshot stays with the job. The text parser accepts one supported field label and value per line, separated by a colon. Links retain the address. Missing fields stay unconfirmed. Keep personal additions separate from source text. Progress updates record their time and source.
-- **Screenshots.** Select, drop or paste PNG or JPEG images. Local Tesseract reads Simplified Chinese and English in the Docker image. Review the extracted text and candidate values. Add further screenshots to fill empty fields, enlarge thumbnails, or remove individual images before saving. Each image can be up to 10 MB, with up to 40 MB of new images per submission. Unreadable or partial images can still be retained as sources. See the [intake specification](docs/screenshot-intake.md).
-- **Preparation.** Write a self-introduction and add named sections. In focused review, use groups containing individual questions and editable answers. Prompts are placeholders. General preparation and individual job notes are saved independently. Older plain-text notes open in a legacy section. Normal and enlarged editing share one draft. Use the editor's save controls or Ctrl/Cmd + S. On a version conflict, copy the unsaved text, refresh and merge your edits.
-- **Materials.** Upload, rename, summarize, preview, download, replace or delete account-owned files. Each file can be up to 10 MB. Local previews support PDF, DOCX, PNG, JPEG, GIF, WebP, and UTF-8 TXT, Markdown, CSV and JSON. DOCX previews preserve paragraphs and tables. Download the original for complex layouts, embedded images or unsupported formats such as DOC.
-- **Accounts.** Register with a nickname, a phone number and a password. Sign in with the phone number and password. The number is a unique local login identifier. SMS verification is unavailable. Back up existing data before upgrading an email-only installation. Email-only records have no phone sign-in until the owner arranges a separate migration.
-- **Platforms.** Associate a source name with your account and select it before saving a new job. This works for all four intake methods. A source association identifies incoming messages. Private recruiting accounts require a separate platform authorization that is currently unavailable.
-- **Settings.** View your account details, edit your nickname, sign out, or confirm your password to delete the account and its data. Passwords use salted scrypt hashes. Sessions use HttpOnly cookies. Anyone with access to the host database or Docker administration can read local data.
+| 想做的事 | 在项目目录运行 |
+| --- | --- |
+| 暂停，再次启动 | `docker compose stop`，下次运行 `docker compose start` |
+| 检查运行状态 | `docker compose ps` |
+| 查看最近日志 | `docker compose logs --tail=80 app` |
+| 获取并运行新版 | 先备份，然后依次运行 `git pull --ff-only` 和 `docker compose up -d --build --wait` |
+| 移除容器并保留本机数据 | `docker compose down`，下次运行 `docker compose up -d --wait` |
 
-## Status assistant and provider keys
+### 配置联网功能（可选）
 
-Open the assistant in the lower-right corner after signing in. The updates tab shows your local progress and the latest 50 imported messages. It checks for messages every 15 seconds while open. When the platform, company, role and an explicit stage match, you can confirm the proposed change to save its original message and source to the job history. Ambiguous messages stay available for review.
-
-Local records, matching, notes, OCR and phone intake work without model or search keys. For public web searches or online interpretation, the computer owner can configure providers once for this installation. In PowerShell:
+每台安装 Waymark 的电脑只需由维护者配置一次。普通用户无需在网页输入密钥。以下 PowerShell 命令只在本机配置文件尚不存在时复制空模板。
 
 ```powershell
 New-Item -ItemType Directory -Force private | Out-Null
 if (!(Test-Path private/backend.env)) { Copy-Item backend.env.example private/backend.env }
 notepad private/backend.env
-docker compose restart app
 ```
 
-Use a Bocha credential for `BOCHA_API_KEY` and a separate DeepSeek credential for `DEEPSEEK_API_KEY`. The public search tab sends only the confirmed query to Bocha. You can pass selected results through the editable excerpt preview to DeepSeek. Interpretation sends the confirmed excerpt, up to 6,000 characters, and a task instruction. The backend does not attach phone numbers, files or resumes to either request. Public search results never change a personal application stage. Provider availability, credentials and balances are independent.
+在文件中分别填写博查的 `BOCHA_API_KEY` 和 DeepSeek 的 `DEEPSEEK_API_KEY`。保存后运行 `docker compose restart app` 即可生效，无需重建镜像。真实配置放在 `private/backend.env`，仓库里只有[空白模板](backend.env.example)。
 
-## Optional iPhone setup
+<details>
+<summary><strong>在 iPhone 上导入招聘短信、接收提醒</strong></summary>
 
-The default installation remains loopback-only. For an iPhone on your **trusted local network**, the optional Compose file runs an HTTPS proxy on the computer's selected private IP at port 8443. Keep Docker running. Set a stable LAN address for the computer. Enter its actual private IPv4 address when prompted:
+手机与电脑需处于可信局域网，电脑上的服务需持续运行。可选配置会在指定的电脑局域网地址开放 HTTPS 的 8443 端口。请使用稳定的局域网 IPv4 地址，仅允许专用网络访问该端口，并保持路由器端口转发关闭。
 
 ```powershell
-$env:WAYMARK_LAN_IP = Read-Host "Computer LAN IPv4 address"
+$env:WAYMARK_LAN_IP = Read-Host "输入电脑的局域网 IPv4 地址"
 docker compose -f compose.yaml -f compose.iphone.yaml up -d --wait
 docker compose -f compose.yaml -f compose.iphone.yaml cp iphone:/data/caddy/pki/authorities/local/root.crt ./private/waymark-local-root.crt
 ```
 
-Allow inbound TCP 8443 only on your private network. Leave router port forwarding off. Transfer only the public `root.crt` to the phone over a trusted channel, install its profile, then enable full trust in Settings > General > About > Certificate Trust Settings. The private CA key stays in the local Docker volume `iphone_tls`. Retain that volume across updates. Removing it requires trusting a new certificate. Remove the trusted profile when retiring this installation. [Apple certificate trust instructions](https://support.apple.com/en-us/102390).
+1. 通过可信渠道把导出的**公开根证书**传到手机，安装描述文件，在「设置 → 通用 → 关于本机 → 证书信任设置」中启用信任。证书私钥保存在本机 Docker 的证书卷内。[苹果证书信任说明](https://support.apple.com/zh-cn/102390)
+2. 在 iOS 16.4 或更高版本的 Safari 中打开 `https://电脑的局域网IP:8443`，添加到主屏幕，从新图标登录。进入「求职助理 → 手机」，点「启用本机推送」并允许通知。退出登录或会话过期后，需重新登录并启用。[主屏幕网页推送说明（英文）](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)
+3. 在岗位表单关联来源，再到助理的「手机」页生成配对码。新建接收共享文本的快捷指令，添加「获取 URL 内容」，向同一 HTTPS 地址的 `/api/mobile/intake` 发起 `POST`。请求头填写 `Authorization: Bearer <配对码>`，JSON 字段 `platform` 填已关联的平台名称，`text` 填选中的消息，最多 3,000 字。配对码只有导入权限，可随时撤销。
+4. 指定发件人的招聘短信可用「信息」自动化转交快捷指令。仅出现在招聘应用内的消息，需要主动分享或复制。相同来源的相同文本默认去重，也可用稳定的 `eventId` 标识同一次事件。实际提醒受网络、系统权限和专注模式影响。
 
-1. In Safari on iOS 16.4 or later, open `https://<computer-LAN-IP>:8443`. Use Share > Add to Home Screen, open the new icon, and sign in. Use the HTTPS address when accessing this setup. [Apple Web Push requirements](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
-2. In the assistant's phone tab, enable push and grant the system permission. Waymark sends a generic alert through Apple's push service when a new message arrives or an existing job changes stage. The alert omits the company, phone and message body. Sign-out or session expiry ends delivery for that session. Sign in and enable push again to resume.
-3. Associate the platform in the job form. In the phone tab, generate a pairing code. In Shortcuts, create a shortcut accepting shared text. Add **Get Contents of URL**, method **POST**, URL `https://<computer-LAN-IP>:8443/api/mobile/intake`, header `Authorization: Bearer <pairing-code>`, and JSON fields `platform` (the exact associated name) and `text` (the selected message, up to 3,000 characters). An optional stable `eventId` identifies retries. With no ID, repeated identical text from the same platform is deduplicated. The code grants import-only access and can be revoked in the assistant.
-4. For recruiting texts from known senders, configure a **Message** automation with sender or content filters and pass its text to the shortcut. Run it with a fictional message first. Where a recruiting app only offers an in-app message, share or copy the selected text. iOS provides no general feed of other apps' notifications to this web app. Intake requires a reachable Waymark server. Device settings, network availability and Focus can affect delivery. [Apple communication triggers](https://support.apple.com/guide/shortcuts/communication-triggers-apdd711f9dff/ios).
-
-Use the same two Compose files for updates. To return to desktop-only mode, run the following while the LAN IP variable is set. These commands preserve local records and the TLS volume:
+手机模式的更新继续使用这两份 Compose 文件。恢复到仅桌面访问时，在保留上述环境变量的终端执行以下命令。证书卷会保留。删除该卷后需为手机重新配置信任。停用这套安装时可移除手机上的证书描述文件。
 
 ```powershell
 docker compose -f compose.yaml -f compose.iphone.yaml down
 docker compose up -d --wait
 ```
 
-## Stop, update and inspect logs
+</details>
 
-```powershell
-docker compose stop
-docker compose start
-docker compose logs --tail=80 app
-```
+<details>
+<summary><strong>数据保存在哪里，如何备份和恢复</strong></summary>
 
-To remove the container and network, run `docker compose down`. Run `docker compose up -d --wait` to reuse the existing host data. Back up before updating, then run:
+默认数据库是宿主机的 `data/workspace.sqlite`，容器内对应 `/var/lib/waymark`。账号、会话、岗位、笔记、导入的消息和上传文件的原始内容都保存在数据库中。重建容器后继续挂载同一目录即可使用原数据。不同电脑之间需要手动迁移。拥有主机数据库或 Docker 管理权限的人可以读取本机资料。
 
-```powershell
-git pull --ff-only
-docker compose up -d --build --wait
-```
-
-Application logs omit request bodies, private records and API keys. Use `docker compose config --quiet` to validate configuration without printing resolved values.
-
-## Storage, backup and restore
-
-The default host database is `data/workspace.sqlite`, mounted under `/var/lib/waymark`. Accounts, sessions, jobs, history, notes, material metadata and attachment bytes reside in it. SQLite may also create `workspace.sqlite-wal` and `workspace.sqlite-shm`. Keep the same host directory when replacing the container. Keep private configuration in `private/backend.env`.
-
-For the default directory, stop every service writing to this database, including any native development process. Run the following PowerShell commands in one terminal:
+**备份。** 先停止所有写入这个数据库的进程，包括本地开发服务。以下命令适用于默认目录。如果设置过 `WAYMARK_DATA_DIR`，请复制实际使用的目录。SQLite 运行中可能生成 `-wal`、`-shm` 文件，因此要复制整个数据目录。备份含私人资料和会话，请妥善保管，密钥另行保存。
 
 ```powershell
 docker compose stop
 $backupDir = Join-Path $env:USERPROFILE ("Waymark-Backups/" + (Get-Date -Format "yyyyMMdd-HHmmss"))
 New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 Copy-Item -LiteralPath ./data -Destination $backupDir -Recurse -ErrorAction Stop
-Get-ChildItem (Join-Path $backupDir "data") -Name
 docker compose start
 ```
 
-Backups include private records and sessions. Store keys separately. Restore into a fresh directory so the current database stays available:
+**恢复。** 将备份复制到新目录，再让容器挂载该目录。这样可以保留原数据库。以下步骤适用于桌面配置。
 
 ```powershell
-$backupDir = Read-Host "Backup directory containing the data folder"
+$backupDir = Read-Host "输入包含 data 文件夹的备份目录"
 $restoreDir = Join-Path $env:LOCALAPPDATA ("Waymark-Restored/" + (Get-Date -Format "yyyyMMdd-HHmmss"))
-if (-not (Test-Path (Join-Path $backupDir "data/workspace.sqlite"))) { throw "Backup database missing" }
+if (!(Test-Path (Join-Path $backupDir "data/workspace.sqlite"))) { throw "备份中缺少数据库" }
 New-Item -ItemType Directory -Path $restoreDir -ErrorAction Stop | Out-Null
 Copy-Item -LiteralPath (Join-Path $backupDir "data") -Destination $restoreDir -Recurse -ErrorAction Stop
 $env:WAYMARK_DATA_DIR = Join-Path $restoreDir "data"
 docker compose up -d --force-recreate --wait
 ```
 
-Sign in, check a job and note, and download an attachment. To keep using the restored directory across terminals, set `WAYMARK_DATA_DIR=C:/actual/path/data` in the local root `.env`. Use forward slashes for Windows paths there. Moving to a new computer requires copying data and private configuration yourself.
+登录后核对岗位、笔记，并下载一个附件验证原件。要让恢复目录在下次打开终端时继续生效，在本地 `.env` 中设置 `WAYMARK_DATA_DIR=C:/实际路径/data`。在设置中删除账号会一并删除其数据。删除数据目录或用旧备份覆盖数据库也可能导致资料丢失。
 
-Deleting an account, removing the data directory, or overwriting a database with an older copy can destroy records. Copying only the main file may omit pending WAL writes. Keep backups and private configuration out of Git and public storage.
+</details>
 
-## Development
+<details>
+<summary><strong>轻量开发与前端热更新</strong></summary>
 
-Use Node.js 24.14 or later in the 24.x series. Docker users do not need Node.js on the host. For a separate development database:
+安装 Node.js 24.14 或更高的 24.x 版本。在单独的开发数据目录运行以下命令，打开[开发工作空间](http://127.0.0.1:5173)。修改 React 或样式后可在浏览器查看更新。
 
 ```powershell
 $env:WAYMARK_DATA = Join-Path $env:LOCALAPPDATA "Waymark-dev/data"
@@ -130,6 +148,6 @@ npm ci
 npm run dev
 ```
 
-Open the [development workspace](http://127.0.0.1:5173). Native screenshot OCR requires `tesseract` on PATH and the `chi_sim` and `eng` language packs. Run `npm run build` for type checking and the production web bundle. Use `npm start` to serve the built app.
+运行 `npm run build` 做类型检查并生成前端产物，`npm start` 可提供构建后的网页。原生开发环境要使用截图识别，需安装 Tesseract 及 `chi_sim`、`eng` 语言包。Docker 版本已包含这些依赖。
 
-See the [repository instructions](agent.md) for source organization, privacy and UI change requirements. Workspace revisions detect conflicting writes. Job updates and their attachments commit in one SQLite transaction.
+</details>
