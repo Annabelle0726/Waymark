@@ -380,6 +380,8 @@ button:active:not(:disabled) {
   color: #926a14;
 }
 .secondary-nav {
+  display: grid;
+  gap: var(--space-1);
   border-top: 1px solid var(--line);
   margin: 18px 19px 0;
   padding: 13px 0;
@@ -387,7 +389,8 @@ button:active:not(:disabled) {
 .secondary-nav button {
   width: 100%;
   justify-content: flex-start;
-  padding: 12px 7px;
+  padding: var(--space-2);
+  min-height: var(--control-height);
   gap: 12px;
   border-radius: 7px;
   font-size: 13px;
