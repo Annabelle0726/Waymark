@@ -1173,73 +1173,6 @@ button:active:not(:disabled) {
   align-items: center;
   font-size: 12px;
 }
-.auth-page {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
-  background:
-    radial-gradient(ellipse at 13% 4%, #deebff, transparent 54%),
-    radial-gradient(ellipse at 95% 98%, #d7eaff, transparent 52%), #f6f9fe;
-  padding: 20px;
-}
-.auth-card {
-  width: min(426px, 100%);
-  padding: 34px;
-  background: #fff;
-  border: 1px solid #dde6f2;
-  border-radius: 18px;
-  box-shadow: 0 20px 80px #233f7112;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.brand img {
-  width: 40px;
-}
-.auth-card h1 {
-  text-align: center;
-  font-size: 26px;
-  margin: 26px 0 6px;
-}
-.auth-card > p {
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-}
-.auth-card .form-body {
-  padding: 24px 0 14px;
-}
-.auth-card .primary {
-  width: 100%;
-}
-.auth-card .form-foot {
-  border: 0;
-}
-.auth-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.auth-links button {
-  padding: 3px 0;
-  color: #3667bb;
-  font-size: 12px;
-}
-.password {
-  position: relative;
-}
-.password input {
-  padding-right: 36px;
-}
-.password button {
-  position: absolute;
-  right: 2px;
-  top: 2px;
-}
 .mobile-close,
 .menu-btn,
 .scrim {
@@ -1486,9 +1419,6 @@ button:active:not(:disabled) {
   }
   .brand-area {
     padding: 23px 19px;
-  }
-  .auth-card {
-    padding: 24px;
   }
 }
 @media (max-width: 390px) {

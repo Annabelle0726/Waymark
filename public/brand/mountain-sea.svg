@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 650" fill="none">
+<defs>
+<linearGradient id="far" x1="400" y1="120" x2="500" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#b6e5f4"/><stop offset="1" stop-color="#edf8fc"/></linearGradient>
+<linearGradient id="mid" x1="200" y1="120" x2="500" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#79c6e7"/><stop offset="1" stop-color="#b8e4f4"/></linearGradient>
+<linearGradient id="near" x1="0" y1="260" x2="500" y2="430" gradientUnits="userSpaceOnUse"><stop stop-color="#3189b8"/><stop offset="1" stop-color="#a2d9ee"/></linearGradient>
+<linearGradient id="sea" x1="450" y1="385" x2="700" y2="650" gradientUnits="userSpaceOnUse"><stop stop-color="#96d8ed"/><stop offset=".55" stop-color="#d5f0f8"/><stop offset="1" stop-color="#eff8fc"/></linearGradient>
+<linearGradient id="light" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff8da" stop-opacity="0"/><stop offset=".5" stop-color="#fffce9"/><stop offset="1" stop-color="#fff8da" stop-opacity="0"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#fff3bf" stop-opacity=".9"/><stop offset=".3" stop-color="#fff9e4" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs>
+<path d="M180 382 510 221Q530 213 551 225L665 270 740 234Q755 229 771 237L1060 382Z" fill="url(#far)"/>
+<path d="M-90 150Q-45 151 2 183L120 266Q143 285 168 275L246 247Q264 242 291 256L504 347 720 391H-90Z" fill="url(#mid)"/>
+<path d="M-90 300 40 273Q66 270 89 282L212 348 298 316Q322 310 349 322L549 407H-90Z" fill="url(#near)"/>
+<path d="M-70 330Q-30 308 18 329L133 380Q163 393 207 389L365 414H-70Z" fill="#2d7eaa"/>
+<path d="M0 410Q278 402 550 414T1100 416V650H0Z" fill="url(#sea)"/>
+<path d="M0 423H1000" stroke="#effbff" stroke-width="3"/>
+<path d="m0 435 348 5-152 8-196 3Zm0 39 278-3-93 11L0 491Zm0 45 180-7 52 7-232 27Z" fill="#79c6df" opacity=".4"/>
+<path d="m410 449 116-2 76 3-70 3Zm-55 29 171-5 140 5-143 4Zm-81 39 251-6 223 5-225 7Zm-95 50 349-8 283 8-284 8Z" fill="url(#light)" opacity=".85"/>
+<ellipse cx="526" cy="415" rx="105" ry="82" fill="url(#glow)"/>
+<path d="M526 373q2 13 15 15-13 2-15 15-2-13-15-15 13-2 15-15Z" fill="#edc66a"/>
+<path d="M526 375v26M513 388h26" stroke="#fff8d5" stroke-width="1.5"/>
+<path d="M526 427v81" stroke="#fffbed" stroke-width="3" stroke-dasharray="2 9" opacity=".9"/>
+</svg>

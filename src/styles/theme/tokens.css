@@ -1,12 +1,14 @@
 :root {
-  --blue: #206b9a;
+  --blue: #1269e9;
   --ink: #123a53;
   --muted: #6a7b86;
-  --line: #e4dfd5;
+  --line: #dce5ef;
   --pale: #eef6f8;
   --gold: #c7a15c;
-  --paper: #fbf8f3;
-  --display-font: Georgia, 'Songti SC', 'STSong', 'SimSun', serif;
+  --paper: #f3f9fd;
+  --display-font:
+    'Microsoft YaHei UI', 'PingFang SC', 'Noto Sans CJK SC', system-ui,
+    sans-serif;
   color: var(--ink);
   background: var(--paper);
 }

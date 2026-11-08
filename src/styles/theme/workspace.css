@@ -7,7 +7,7 @@ body {
 }
 .sidebar,
 .side-bottom {
-  background: #fffdf9;
+  background: #fcfdff;
 }
 .brand-area {
   gap: 8px;
@@ -42,14 +42,14 @@ body {
 }
 .outline {
   border-color: #c6d0d5;
-  background: #fffdfa;
+  background: #ffffff;
 }
 .outline:hover {
   background: #edf5f7;
 }
 .topbar {
-  background: #fffdf9c9;
-  border-bottom-color: #e6dcc9;
+  background: #fcfdffc9;
+  border-bottom-color: #dce5ef;
 }
 .environment {
   background: #fcf7ea;
@@ -101,8 +101,8 @@ body {
 }
 .card,
 .job-cover {
-  background: #fffdfa;
-  border-color: #e3ddd2;
+  background: #ffffff;
+  border-color: #dce5ef;
   box-shadow: 0 4px 14px #6b593509;
 }
 .cover-main {
@@ -113,7 +113,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: url('/brand/watercolor.svg') center 60% / cover;
+  background: url('/brand/mountain-sea.svg') center 60% / cover;
   z-index: -1;
   opacity: 0.85;
 }
@@ -143,7 +143,7 @@ body {
   background: #b9cbd1;
 }
 .facts {
-  background: #fffefa;
+  background: #ffffff;
   border-top: 1px solid #e1e6e3;
 }
 .facts > div:first-child strong {
@@ -158,7 +158,7 @@ body {
   background: #fafaf6;
 }
 .notes .card-head {
-  background: linear-gradient(110deg, #edf7f8, #fffdfa);
+  background: linear-gradient(110deg, #edf7f8, #ffffff);
   border-bottom-color: #d9e4e4;
 }
 .editor-tools {
@@ -173,7 +173,7 @@ body {
 }
 .note-input,
 .note-preview {
-  background: #fffefa;
+  background: #ffffff;
 }
 .note-input:focus {
   outline-color: #a5c8d4;
@@ -188,12 +188,12 @@ body {
 }
 .dialog,
 .dialog-head {
-  background: #fffdfa;
+  background: #ffffff;
 }
 .form-body input,
 .form-body textarea,
 .form-body select {
-  background: #fffdfa;
+  background: #ffffff;
   border-color: #c9d1d3;
 }
 .form-body input:focus,
@@ -206,7 +206,7 @@ body {
   background: #eff2ef;
 }
 .mode-row .chosen {
-  background: #fffdfa;
+  background: #ffffff;
   color: #236082;
 }
 .event.latest > i {
@@ -226,6 +226,6 @@ body {
     font-size: 27px;
   }
   .sidebar {
-    background: #fffdf9;
+    background: #fcfdff;
   }
 }
