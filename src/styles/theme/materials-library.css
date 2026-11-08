@@ -1,0 +1,349 @@
+.materials-page {
+  --materials-width: calc(var(--content-width-compact) + var(--space-8));
+  --materials-row-height: calc(var(--control-height) + var(--space-4));
+  --materials-motion: 180ms;
+  position: relative;
+  width: min(100%, var(--materials-width));
+  margin-inline: auto;
+  padding-bottom: calc(var(--space-10) + env(safe-area-inset-bottom));
+  font-size: var(--text-body);
+  color: var(--ink);
+}
+.materials-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.materials-toolbar h2 {
+  font-size: var(--text-section);
+  font-weight: 600;
+}
+.materials-toolbar button {
+  min-height: var(--control-height);
+}
+.materials-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+  background: var(--surface);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-control);
+}
+.materials-search svg {
+  width: var(--space-4);
+  color: var(--muted);
+}
+.materials-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: 0;
+  font: inherit;
+}
+.materials-search:focus-within {
+  outline: var(--border-width) solid var(--blue);
+}
+.materials-container {
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.material-group h3 {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--muted);
+  padding: var(--space-3) var(--space-4) var(--space-1);
+}
+.material-item + .material-item,
+.material-group + .material-group {
+  border-top: var(--border-width) solid var(--line);
+}
+.material-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(
+      0,
+      calc(var(--space-10) * 3)
+    ) auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--materials-row-height);
+  padding: var(--space-2) var(--space-3);
+  transition: background var(--materials-motion);
+}
+.material-open {
+  justify-content: start;
+  min-width: 0;
+  gap: var(--space-3);
+  text-align: left;
+  padding: 0;
+  align-self: stretch;
+}
+.material-open .section-icon {
+  width: var(--space-8);
+  height: var(--space-8);
+  flex-shrink: 0;
+}
+.material-info {
+  display: block;
+  min-width: 0;
+}
+.material-info strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--blue);
+  font-weight: 600;
+  font-size: var(--text-body);
+}
+.material-info small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+.material-summary-toggle {
+  display: block;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: var(--text-small);
+  padding: var(--space-2) 0;
+}
+.material-actions {
+  display: flex;
+}
+.material-actions .icon-btn {
+  width: var(--control-height);
+  height: var(--control-height);
+}
+.material-summary-editor {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: var(--border-width) solid var(--line);
+}
+.material-summary-editor label {
+  display: block;
+  font-size: var(--text-small);
+}
+.material-summary-editor textarea {
+  width: 100%;
+  display: block;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+}
+.material-summary-editor .actions,
+.dialog:has(.material-delete-form) .actions {
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+.materials-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+  border: var(--border-width) dashed var(--line);
+  border-radius: var(--radius-control);
+}
+.materials-empty > svg {
+  width: var(--space-8);
+  height: var(--space-8);
+  color: var(--muted);
+}
+.materials-empty p,
+.materials-no-results {
+  color: var(--muted);
+}
+.materials-no-results {
+  text-align: center;
+  padding: var(--space-6);
+}
+.materials-drop-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border: var(--border-width) dashed var(--blue);
+  border-radius: var(--radius-control);
+  background: var(--pale);
+  color: var(--blue);
+  pointer-events: none;
+}
+.materials-upload-count {
+  margin: var(--space-3) var(--space-4) 0;
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+.material-menu {
+  position: fixed;
+  inset: var(--menu-edge) var(--menu-right) auto auto;
+  margin: 0;
+  padding: var(--space-2);
+  width: calc(var(--space-10) * 6);
+  max-width: calc(100vw - var(--space-8));
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  background: var(--surface);
+}
+.material-menu.above {
+  inset-block: auto var(--menu-edge);
+}
+.material-menu::backdrop {
+  background: transparent;
+}
+.material-menu button {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  font-size: var(--text-body);
+}
+.material-menu svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.material-menu header {
+  display: none;
+}
+.material-menu .mobile-preview-action {
+  display: none;
+}
+.material-menu .material-delete-action {
+  border-top: var(--border-width) solid var(--line);
+  border-radius: 0;
+  margin-top: var(--space-2);
+  color: var(--danger);
+}
+.materials-page .danger-text {
+  color: var(--danger);
+}
+.dialog:has(.material-delete-form) p {
+  overflow-wrap: anywhere;
+  font-size: var(--text-body);
+  line-height: 1.8;
+}
+.dialog:has(.material-delete-form) .danger-text {
+  color: var(--danger);
+}
+.materials-page button,
+.material-menu button {
+  transition:
+    background var(--materials-motion),
+    color var(--materials-motion);
+}
+.materials-page button:focus-visible,
+.materials-page textarea:focus-visible,
+.material-menu button:focus-visible {
+  outline: var(--border-width) solid var(--blue);
+  outline-offset: var(--space-1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .material-row:hover,
+  .material-menu button:hover {
+    background: var(--pale);
+  }
+  .material-summary-toggle:hover {
+    color: var(--blue);
+  }
+}
+@media (max-width: 640px) {
+  .main-content.materials-main {
+    padding-inline: var(--space-4);
+  }
+  .material-row {
+    grid-template-columns: minmax(0, 1fr) var(--control-height);
+    gap: 0 var(--space-2);
+  }
+  .material-open {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .material-info strong {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .material-actions {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+  }
+  .material-download {
+    display: none;
+  }
+  .material-summary-toggle {
+    grid-column: 1;
+    grid-row: 2;
+    margin-left: calc(var(--space-8) + var(--space-3));
+    padding: var(--space-1) 0 0;
+  }
+  .material-menu,
+  .material-menu.above {
+    inset: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - var(--space-8));
+    padding: var(--space-3) var(--space-4)
+      calc(var(--space-4) + env(safe-area-inset-bottom));
+    border-radius: var(--space-4) var(--space-4) 0 0;
+  }
+  .material-menu::backdrop {
+    background: color-mix(in srgb, var(--ink) 35%, transparent);
+  }
+  .material-menu header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    border-bottom: var(--border-width) solid var(--line);
+    margin-bottom: var(--space-2);
+  }
+  .material-menu header span {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--text-body);
+  }
+  .material-menu header .icon-btn {
+    width: var(--control-height);
+    flex: none;
+  }
+  .material-menu button,
+  .material-menu .mobile-preview-action {
+    display: flex;
+    min-height: calc(var(--control-height) + var(--space-1));
+  }
+  .material-summary-editor textarea {
+    font-size: var(--text-section);
+  }
+  .dialog:has(.material-delete-form) {
+    width: calc(100vw - var(--space-8));
+  }
+  .materials-page .primary,
+  .materials-page .outline,
+  .dialog:has(.material-delete-form) button {
+    min-height: var(--control-height);
+  }
+}

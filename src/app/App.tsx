@@ -42,20 +42,13 @@ import {
 import { Dialog } from '../components/forms/Forms'
 import Settings from '../features/settings/Settings'
 import { JobForm, UpdateForm } from '../features/jobs/JobForms'
-import { MaterialForm } from '../features/materials/MaterialForm'
+import MaterialsPage from '../features/materials/MaterialsPage'
 import MaterialPreview from '../features/materials/MaterialPreview'
 import { Auth } from '../features/auth/Auth'
 import Notes from '../features/notes/Notes'
 import JobDetail, { StatusPill } from '../features/jobs/JobDetail'
 type Page = 'jobs' | 'general' | 'materials' | 'settings'
-type Modal =
-  | ''
-  | 'add'
-  | 'edit'
-  | 'update'
-  | 'source'
-  | 'history'
-  | 'material'
+type Modal = '' | 'add' | 'edit' | 'update' | 'source' | 'history'
 const pageNames: Record<Page, string> = {
   jobs: '我的岗位',
   general: '通用面试准备',
@@ -77,7 +70,6 @@ export default function App() {
   const [query, setQuery] = useState(''),
     [drawer, setDrawer] = useState(false),
     [modal, setModal] = useState<Modal>(''),
-    [material, setMaterial] = useState<Material>(),
     [toast, setToast] = useState(''),
     [dirty, setDirty] = useState(false)
   const [instance, setInstance] = useState(0)
@@ -98,7 +90,6 @@ export default function App() {
     setQuery('')
     setJobsOpen(true)
     setInstance((n) => n + 1)
-    setMaterial(undefined)
     setToast('')
   }
   async function loadWorkspace(u: User) {
@@ -204,7 +195,6 @@ export default function App() {
     if (!leave()) return
     await api('logout', 'POST', {})
     reset(empty, null, 0)
-
   }
   async function download(id: string) {
     const res = await fetch('/api/files/' + id)
@@ -413,9 +403,7 @@ export default function App() {
             aria-current={page === 'settings' ? 'page' : undefined}
             onClick={() => navigate('settings')}
           >
-            <span className="avatar">
-              {user.name.slice(0, 1)}
-            </span>
+            <span className="avatar">{user.name.slice(0, 1)}</span>
             <span>
               <strong>{user.name}</strong>
               <small>账号与设置</small>
@@ -444,43 +432,38 @@ export default function App() {
             本机私人空间
           </div>
         </header>
-        <main className={'main-content' + (page === 'settings' ? ' settings-main' : '')}>
-          {page !== 'settings' && (
-          <div className="page-heading">
-            <div>
-              <span className="heading-dash" />
-              <h2>{title}</h2>
+        <main
+          className={
+            'main-content' + (page === 'general' ? ' preparation-main' : '') + (page === 'settings' ? ' settings-main' : page === 'materials' ? ' materials-main' : '')
+          }
+        >
+          {page !== 'settings' && page !== 'materials' && (
+            <div className="page-heading">
+              <div>
+                <span className="heading-dash" />
+                <h2>{title}</h2>
+              </div>
+              <div className="actions">
+                {page === 'jobs' && job && (
+                  <>
+                    <button
+                      className="outline"
+                      onClick={() => setModal('edit')}
+                    >
+                      <Pencil />
+                      编辑岗位
+                    </button>
+                    <button
+                      className="primary"
+                      onClick={() => setModal('update')}
+                    >
+                      <CirclePlus />
+                      记录更新
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-            <div className="actions">
-              {page === 'jobs' && job && (
-                <>
-                  <button className="outline" onClick={() => setModal('edit')}>
-                    <Pencil />
-                    编辑岗位
-                  </button>
-                  <button
-                    className="primary"
-                    onClick={() => setModal('update')}
-                  >
-                    <CirclePlus />
-                    记录更新
-                  </button>
-                </>
-              )}
-              {page === 'materials' && (
-                <button
-                  className="primary"
-                  onClick={() => {
-                    setMaterial(undefined)
-                    setModal('material')
-                  }}
-                >
-                  <UploadCloud />
-                  上传资料
-                </button>
-              )}
-            </div>
-          </div>
           )}
           {page === 'jobs' &&
             (job ? (
@@ -507,78 +490,29 @@ export default function App() {
               {notes()}
             </>
           )}
-          {page === 'materials' &&
-            (state.materials.length ? (
-              <div className="file-list">
-                {state.materials.map((m) => (
-                  <article className="card file-card" key={m.id}>
-                    <span className="section-icon">
-                      <FileText />
-                    </span>
-                    <div>
-                      <small>
-                        {m.category} · {stamp(m.date)}
-                      </small>
-                      <h3>{m.name}</h3>
-                      <p>{m.summary || '尚未填写摘要'}</p>
-                    </div>
-                    <div className="actions">
-                      <button
-                        className="outline"
-                        aria-label={'预览 ' + m.name}
-                        onClick={() => setPreviewMaterial(m)}
-                      >
-                        预览
-                      </button>
-                      <button
-                        className="icon-btn"
-                        aria-label={'下载 ' + m.name}
-                        onClick={() => act(() => download(m.fileId))}
-                      >
-                        <Download />
-                      </button>
-                      <button
-                        className="icon-btn"
-                        aria-label={'编辑 ' + m.name}
-                        onClick={() => {
-                          setMaterial(m)
-                          setModal('material')
-                        }}
-                      >
-                        <Pencil />
-                      </button>
-                      <button
-                        className="icon-btn"
-                        aria-label={'删除 ' + m.name}
-                        onClick={() =>
-                          act(async () => {
-                            if (confirm('删除这份资料及其文件？'))
-                              await save({
-                                ...state,
-                                materials: state.materials.filter(
-                                  (x) => x.id !== m.id,
-                                ),
-                              })
-                          })
-                        }
-                      >
-                        <Trash2 />
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="card empty">
-                <FolderOpen />
-                <h2>资料库还是空的</h2>
-                <p>上传简历、证书或奖状，可为每份资料添加摘要。</p>
-              </div>
-            ))}
-          {page === 'settings' && (
-            <Settings user={user} onUser={setUser} onLogout={logout} onDeleted={() => reset(empty, null, 0)} />
+          {page === 'materials' && (
+            <MaterialsPage materials={state.materials}
+              onPreview={setPreviewMaterial}
+              onDownload={m => act(() => download(m.fileId))}
+              onDirty={setDirty}
+              onSave={async (m, upload) => {
+                await save({ ...state, materials: state.materials.some(x => x.id === m.id)
+                  ? state.materials.map(x => x.id === m.id ? m : x) : [m, ...state.materials] }, upload)
+              }}
+              onDelete={async m => {
+                await save({ ...state, materials: state.materials.filter(x => x.id !== m.id) })
+              }}
+            />
           )}
-          {page !== 'settings' && (
+          {page === 'settings' && (
+            <Settings
+              user={user}
+              onUser={setUser}
+              onLogout={logout}
+              onDeleted={() => reset(empty, null, 0)}
+            />
+          )}
+          {page !== 'settings' && page !== 'materials' && page !== 'general' && (
             <footer className="workspace-foot">
               <ShieldCheck size={14} />
               个人资料仅保存在本机服务
@@ -648,11 +582,21 @@ export default function App() {
                 下载原始截图
               </button>
             )}
-            {job.screenshots?.map((shot, i) => <section key={shot.fileId}>
-              <h3>补充截图 {i + 1} · {stamp(shot.time)}</h3>
-              <pre>{shot.original || '未识别到文字'}</pre>
-              <button className="outline" onClick={() => act(() => download(shot.fileId))}><Download/>下载补充截图 {i + 1}</button>
-            </section>)}
+            {job.screenshots?.map((shot, i) => (
+              <section key={shot.fileId}>
+                <h3>
+                  补充截图 {i + 1} · {stamp(shot.time)}
+                </h3>
+                <pre>{shot.original || '未识别到文字'}</pre>
+                <button
+                  className="outline"
+                  onClick={() => act(() => download(shot.fileId))}
+                >
+                  <Download />
+                  下载补充截图 {i + 1}
+                </button>
+              </section>
+            ))}
             <h3>用户补充</h3>
             <p>{job.supplement || '尚无补充'}</p>
             <h3>待确认事项</h3>
@@ -681,28 +625,6 @@ export default function App() {
               </div>
             ))}
           </div>
-        </Dialog>
-      )}
-      {modal === 'material' && (
-        <Dialog
-          title={material ? '编辑资料' : '上传资料'}
-          onClose={() => setModal('')}
-        >
-          <MaterialForm
-            item={material}
-            onSave={async (m, u) => {
-              await save(
-                {
-                  ...state,
-                  materials: material
-                    ? state.materials.map((x) => (x.id === m.id ? m : x))
-                    : [m, ...state.materials],
-                },
-                u,
-              )
-              setModal('')
-            }}
-          />
         </Dialog>
       )}
 

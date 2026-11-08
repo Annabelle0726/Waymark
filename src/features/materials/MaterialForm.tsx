@@ -10,15 +10,17 @@ import { Form } from '../../components/forms/Forms'
 
 export function MaterialForm({
   item,
+  initialFile,
   onSave,
 }: {
   item?: Material
+  initialFile?: File
   onSave: (m: Material, u?: Upload) => Promise<void>
 }) {
-  const [name, setName] = useState(item?.name || ''),
+  const [name, setName] = useState(item?.name || initialFile?.name || ''),
     [category, setCategory] = useState(item?.category || '简历'),
     [summary, setSummary] = useState(item?.summary || ''),
-    [file, setFile] = useState<File>()
+    [file, setFile] = useState<File | undefined>(initialFile)
   return (
     <Form
       label="保存资料"
@@ -43,14 +45,16 @@ export function MaterialForm({
         {item ? '替换文件（可选）' : '选择文件'}
         <input
           type="file"
-          required={!item}
+          required={!item && !file}
           onChange={(e) => {
             const f = e.target.files?.[0]
             setFile(f)
             if (f && !name) setName(f.name)
           }}
         />
-        <small>单个文件最大 10 MB</small>
+        <small>
+          {file ? '已选择：' + file.name + ' · ' : ''}单个文件最大 10 MB
+        </small>
       </label>
       <label>
         资料名称
@@ -62,8 +66,10 @@ export function MaterialForm({
       </label>
       <label>
         资料类型
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          {['简历', '证书', '奖状', '其他'].map((x) => (
+        <select aria-label="资料类型" value={category} onChange={(e) => setCategory(e.target.value)}>
+          {Array.from(
+            new Set(['简历', '作品集', '证书', '奖状', '其他', category]),
+          ).map((x) => (
             <option key={x}>{x}</option>
           ))}
         </select>
@@ -71,6 +77,7 @@ export function MaterialForm({
       <label>
         资料摘要
         <textarea
+          aria-label="资料摘要"
           rows={3}
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
