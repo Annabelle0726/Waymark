@@ -1,4 +1,5 @@
 import { initAccounts } from './accounts.mjs'
+import { initSources } from './sources.mjs'
 import { recognizeScreenshot } from './screenshot.mjs'
 import { mountAssistant } from './assistant.mjs'
 import { previewType } from './file-preview.mjs'
@@ -27,10 +28,12 @@ db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA secure_delete=O
  CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, owner TEXT REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS files(id TEXT, owner TEXT REFERENCES accounts(id) ON DELETE CASCADE, name TEXT NOT NULL, bytes BLOB NOT NULL, PRIMARY KEY(owner,id));`)
 initAccounts(db)
+const sources = initSources(db)
 const app = express()
 app.disable('x-powered-by')
 app.use((req, res, next) => {
   if (
+    !(process.env.WAYMARK_HTTPS_HOST && req.headers.host === process.env.WAYMARK_HTTPS_HOST) &&
     !/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(req.headers.host || '')
   )
     return res.sendStatus(403)
@@ -45,7 +48,10 @@ const textField = (value, max = 200000) =>
 const digest = (token) => createHash('sha256').update(token).digest('hex')
 const hashPassword = promisify(scrypt)
 const newState = () => ({ jobs: [], general: '', materials: [] })
-const publicUser = (a) => ({ id: a.id, email: a.email || '', name: a.name, phone: a.phone })
+const publicUser = (a) => ({
+  id: a.id, email: a.email || '', name: a.name, phone: a.phone,
+  platforms: sources.list(a.id),
+})
 const cookieOptions = {
   httpOnly: true,
   sameSite: 'strict',
@@ -142,11 +148,13 @@ app.post('/api/auth/:action', async (req, res) => {
   signIn(res, account.id)
   res.json({ user: publicUser(account) })
 })
+app.post('/api/mobile/intake', sources.intake)
 app.use('/api', (req, res, next) =>
   req.account
     ? next()
     : res.status(401).json({ error: '请登录后访问私人空间' }),
 )
+sources.mount(app)
 mountAssistant(app)
 app.post('/api/screenshot/recognize', recognizeScreenshot)
 app.post('/api/logout', (req, res) => {
@@ -237,6 +245,14 @@ app.put('/api/workspace', (req, res) => {
   if (!validState(state) || JSON.stringify(state).length > 4000000)
     fail(400, '内容超出限制或格式不完整')
   const owner = req.account.id
+  const oldJobs = new Map(JSON.parse(req.account.state).jobs.map(j => [j.id, j]))
+  const bound = new Set(sources.list(owner))
+  for (const job of state.jobs) {
+    const old = oldJobs.get(job.id)
+    if (old?.platform !== job.platform && !bound.has(job.platform))
+      fail(400, '请先关联招聘平台，再确认岗位来源')
+  }
+  const progressChanged = state.jobs.some(j => oldJobs.has(j.id) && oldJobs.get(j.id).status !== j.status)
   const ids = new Set([
     ...state.jobs.map((j) => j.fileId).filter(Boolean),
     ...state.jobs.flatMap(j => (j.screenshots || []).map(s => s.fileId)),
@@ -277,6 +293,7 @@ app.put('/api/workspace', (req, res) => {
       if (!ids.has(file.id))
         sql('DELETE FROM files WHERE owner=? AND id=?').run(owner, file.id)
     db.exec('COMMIT')
+    if (progressChanged) void sources.notify(owner)
     res.json({ revision: revision + 1 })
   } catch (error) {
     db.exec('ROLLBACK')

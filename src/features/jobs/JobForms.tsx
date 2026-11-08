@@ -34,9 +34,11 @@ const modes = [
   { name: '手动填写', Icon: PenLine },
 ]
 export function JobForm({
-  job,
+  job, platforms, bindPlatform,
   onSave,
 }: {
+  platforms: string[]
+  bindPlatform: (name:string)=>Promise<void>
   job?: Job
   onSave: (j: Job, u?: Upload | Upload[]) => Promise<void>
 }) {
@@ -46,6 +48,10 @@ export function JobForm({
     [url, setUrl] = useState(''),
     [hint, setHint] = useState('')
   const [changes, setChanges] = useState<Partial<Job>>({})
+  const [platform,setPlatform]=useState(job?.platform || '')
+  const [newPlatform,setNewPlatform]=useState('')
+  const [binding,setBinding]=useState(false)
+  const [bindError,setBindError]=useState('')
   const gallery = useScreenshots(job)
   const withImages = Boolean(job) || mode === '上传截图'
   const pending = withImages && gallery.rows.some((r) => r.state === 'pending')
@@ -97,6 +103,8 @@ export function JobForm({
         pending || invalid || (!job && withImages && !gallery.rows.length)
       }
       submit={async () => {
+        if (!platform || !platforms.includes(platform))
+          throw new Error('请先关联并选择招聘平台')
         if (!allowMissing && (!draft.company.trim() || !draft.title.trim()))
           throw new Error('请填写公司和岗位名称')
         if (!job && mode === '岗位链接' && !/^https?:\/\//i.test(url))
@@ -118,8 +126,13 @@ export function JobForm({
             : mode === '岗位链接'
               ? url
               : fieldKeys
-                  .filter((k) => draft[k])
-                  .map((k) => fields[k] + '：' + draft[k])
+                  .filter((k) => k === 'platform' || draft[k])
+                  .map(
+                    (k) =>
+                      fields[k] +
+                      '：' +
+                      (k === 'platform' ? platform : draft[k]),
+                  )
                   .join('\n'))
         const sources =
           source === '上传截图'
@@ -128,6 +141,7 @@ export function JobForm({
         await onSave(
           {
             ...draft,
+            platform,
             company: draft.company.trim(),
             title: draft.title.trim(),
             source,
@@ -165,6 +179,55 @@ export function JobForm({
           ))}
         </div>
       )}
+      <label>
+        招聘平台 *
+        <select
+          required
+          aria-label="招聘平台"
+          value={platforms.includes(platform) ? platform : ''}
+          onChange={(e) => setPlatform(e.target.value)}
+        >
+          <option value="">请选择已关联的平台</option>
+          {platforms.map((p) => (
+            <option key={p}>{p}</option>
+          ))}
+        </select>
+      </label>
+      <details open={platforms.length === 0 || undefined}>
+        <summary>关联新的岗位来源</summary>
+        <label>
+          平台名称
+          <input
+            maxLength={80}
+            placeholder="例如 BOSS直聘、公司官网"
+            value={newPlatform}
+            onChange={(e) => setNewPlatform(e.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          className="outline"
+          disabled={binding || !newPlatform.trim()}
+          onClick={async () => {
+            const name = newPlatform.trim()
+            setBinding(true)
+            setBindError('')
+            try {
+              await bindPlatform(name)
+              setPlatform(name)
+              setNewPlatform('')
+            } catch (e) {
+              setBindError((e as Error).message)
+            } finally {
+              setBinding(false)
+            }
+          }}
+        >
+          关联此来源
+        </button>
+        <small>仅关联本机岗位来源，平台账号授权及站内同步尚未接入。</small>
+        {bindError && <p role="alert">{bindError}</p>}
+      </details>
       {withImages && <ScreenshotInput gallery={gallery} />}
       {job &&
       (job.fileId || job.screenshots?.length) &&
@@ -222,14 +285,7 @@ export function JobForm({
             </h3>
             <div className="field-grid">
               {(
-                [
-                  'company',
-                  'title',
-                  'platform',
-                  'salary',
-                  'location',
-                  'remote',
-                ] as const
+                ['company', 'title', 'salary', 'location', 'remote'] as const
               ).map(field)}
             </div>
           </section>

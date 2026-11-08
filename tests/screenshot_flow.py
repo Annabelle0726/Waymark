@@ -41,12 +41,14 @@ with sync_playwright() as driver:
         return base64.b64decode(page.evaluate("() => window.pastedBytes"))
 
     def save():
+        page.get_by_role("combobox", name="招聘平台").select_option("验收平台")
         button("确认添加岗位").click()
         expect(page.get_by_role("dialog")).to_have_count(0)
 
     api = context.request
     assert api.post(base + "/api/screenshot/recognize", data={"data": ""}).status == 401
-    assert api.post(base + "/api/auth/register", data={"name":"虚构测试","email":uuid.uuid4().hex+"@example.invalid","password":password}).ok
+    assert api.post(base + "/api/auth/register", data={"name":"虚构测试","email":uuid.uuid4().hex+"@example.invalid","phone":"+12025550199","password":password}).ok
+    assert api.post(base + "/api/platforms", data={"name":"验收平台"}).ok
     try:
         full = screenshot(["公司：虚构科技", "岗位：前端开发工程师", "薪资：18-25K", "技能：React"], "jpeg")
         cropped = screenshot(["前端开发工程师", "18-25K"])

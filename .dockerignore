@@ -15,3 +15,5 @@
 !src/**/*.css
 !server/
 !server/*.mjs
+!public/manifest.webmanifest
+!public/notifications.js

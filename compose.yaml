@@ -3,6 +3,9 @@ services:
   app:
     build: .
     image: waymark-local:1
+    environment:
+      WAYMARK_HTTPS_HOST: ${WAYMARK_HTTPS_HOST:-}
+      WAYMARK_HTTPS: ${WAYMARK_HTTPS:-0}
     init: true
     restart: unless-stopped
     ports:

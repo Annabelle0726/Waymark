@@ -29,8 +29,48 @@ Compose mounts `data/` for storage and `private/` read-only for configuration. O
 - **Screenshots.** Select, drop or paste PNG or JPEG images. Local Tesseract reads Simplified Chinese and English in the Docker image. Review the extracted text and candidate values. Add further screenshots to fill empty fields, enlarge thumbnails, or remove individual images before saving. Each image can be up to 10 MB, with up to 40 MB of new images per submission. Unreadable or partial images can still be retained as sources. See the [intake specification](docs/screenshot-intake.md).
 - **Preparation.** Write a self-introduction and add named sections. In focused review, use groups containing individual questions and editable answers. Prompts are placeholders. General preparation and individual job notes are saved independently. Older plain-text notes open in a legacy section. Normal and enlarged editing share one draft. Use the editor's save controls or Ctrl/Cmd + S. On a version conflict, copy the unsaved text, refresh and merge your edits.
 - **Materials.** Upload, rename, summarize, preview, download, replace or delete account-owned files. Each file can be up to 10 MB. Local previews support PDF, DOCX, PNG, JPEG, GIF, WebP, and UTF-8 TXT, Markdown, CSV and JSON. DOCX previews preserve paragraphs and tables. Download the original for complex layouts, embedded images or unsupported formats such as DOC.
-- **Settings.** View your email, edit your nickname, sign out, or confirm your password to delete the account and its data. Passwords use salted scrypt hashes. Sessions use HttpOnly cookies. The API checks account ownership for workspaces and attachments. Anyone with access to the host database or Docker administration can read local data.
-- **Integration scope.** Interview preparation requires no API key. The optional DeepSeek backend accepts a key in `private/backend.env`; the empty template is `backend.env.example`. The preparation UI has no online drafting entry. Mini programs, cross-device sync, recruiting-platform authorization, personal agent integration, automatic applications, outbound messages and email password recovery are outside the current implementation.
+- **Accounts.** Register with a nickname, a phone number and a password. Sign in with the phone number and password. The number is a unique local login identifier. SMS verification is unavailable. Back up existing data before upgrading an email-only installation. Email-only records have no phone sign-in until the owner arranges a separate migration.
+- **Platforms.** Associate a source name with your account and select it before saving a new job. This works for all four intake methods. A source association identifies incoming messages. Private recruiting accounts require a separate platform authorization that is currently unavailable.
+- **Settings.** View your account details, edit your nickname, sign out, or confirm your password to delete the account and its data. Passwords use salted scrypt hashes. Sessions use HttpOnly cookies. Anyone with access to the host database or Docker administration can read local data.
+
+## Status assistant and provider keys
+
+Open the assistant in the lower-right corner after signing in. The updates tab shows your local progress and the latest 50 imported messages. It checks for messages every 15 seconds while open. When the platform, company, role and an explicit stage match, you can confirm the proposed change to save its original message and source to the job history. Ambiguous messages stay available for review.
+
+Local records, matching, notes, OCR and phone intake work without model or search keys. For public web searches or online interpretation, the computer owner can configure providers once for this installation. In PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force private | Out-Null
+if (!(Test-Path private/backend.env)) { Copy-Item backend.env.example private/backend.env }
+notepad private/backend.env
+docker compose restart app
+```
+
+Use a Bocha credential for `BOCHA_API_KEY` and a separate DeepSeek credential for `DEEPSEEK_API_KEY`. The public search tab sends only the confirmed query to Bocha. You can pass selected results through the editable excerpt preview to DeepSeek. Interpretation sends the confirmed excerpt, up to 6,000 characters, and a task instruction. The backend does not attach phone numbers, files or resumes to either request. Public search results never change a personal application stage. Provider availability, credentials and balances are independent.
+
+## Optional iPhone setup
+
+The default installation remains loopback-only. For an iPhone on your **trusted local network**, the optional Compose file runs an HTTPS proxy on the computer's selected private IP at port 8443. Keep Docker running. Set a stable LAN address for the computer. Enter its actual private IPv4 address when prompted:
+
+```powershell
+$env:WAYMARK_LAN_IP = Read-Host "Computer LAN IPv4 address"
+docker compose -f compose.yaml -f compose.iphone.yaml up -d --wait
+docker compose -f compose.yaml -f compose.iphone.yaml cp iphone:/data/caddy/pki/authorities/local/root.crt ./private/waymark-local-root.crt
+```
+
+Allow inbound TCP 8443 only on your private network. Leave router port forwarding off. Transfer only the public `root.crt` to the phone over a trusted channel, install its profile, then enable full trust in Settings > General > About > Certificate Trust Settings. The private CA key stays in the local Docker volume `iphone_tls`. Retain that volume across updates. Removing it requires trusting a new certificate. Remove the trusted profile when retiring this installation. [Apple certificate trust instructions](https://support.apple.com/en-us/102390).
+
+1. In Safari on iOS 16.4 or later, open `https://<computer-LAN-IP>:8443`. Use Share > Add to Home Screen, open the new icon, and sign in. Use the HTTPS address when accessing this setup. [Apple Web Push requirements](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
+2. In the assistant's phone tab, enable push and grant the system permission. Waymark sends a generic alert through Apple's push service when a new message arrives or an existing job changes stage. The alert omits the company, phone and message body. Sign-out or session expiry ends delivery for that session. Sign in and enable push again to resume.
+3. Associate the platform in the job form. In the phone tab, generate a pairing code. In Shortcuts, create a shortcut accepting shared text. Add **Get Contents of URL**, method **POST**, URL `https://<computer-LAN-IP>:8443/api/mobile/intake`, header `Authorization: Bearer <pairing-code>`, and JSON fields `platform` (the exact associated name) and `text` (the selected message, up to 3,000 characters). An optional stable `eventId` identifies retries. With no ID, repeated identical text from the same platform is deduplicated. The code grants import-only access and can be revoked in the assistant.
+4. For recruiting texts from known senders, configure a **Message** automation with sender or content filters and pass its text to the shortcut. Run it with a fictional message first. Where a recruiting app only offers an in-app message, share or copy the selected text. iOS provides no general feed of other apps' notifications to this web app. Intake requires a reachable Waymark server. Device settings, network availability and Focus can affect delivery. [Apple communication triggers](https://support.apple.com/guide/shortcuts/communication-triggers-apdd711f9dff/ios).
+
+Use the same two Compose files for updates. To return to desktop-only mode, run the following while the LAN IP variable is set. These commands preserve local records and the TLS volume:
+
+```powershell
+docker compose -f compose.yaml -f compose.iphone.yaml down
+docker compose up -d --wait
+```
 
 ## Stop, update and inspect logs
 

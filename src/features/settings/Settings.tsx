@@ -143,9 +143,14 @@ export default function Settings({ user, onUser, onLogout, onDeleted }: Props) {
             </dd>
           </div>
           <div className="settings-info-row">
-            <dt>邮箱</dt>
-            <dd>{user.email}</dd>
+            <dt>手机号</dt>
+            <dd>{user.phone}（未验证）</dd>
           </div>
+          <div className="settings-info-row">
+            <dt>关联来源</dt>
+            <dd>{user.platforms.join('、') || '尚未关联，可在添加岗位时关联'}</dd>
+          </div>
+          {user.email && <div className="settings-info-row"><dt>邮箱</dt><dd>{user.email}</dd></div>}
         </dl>
         {error && (
           <p

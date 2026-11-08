@@ -8,6 +8,7 @@ export const statuses = [
 ] as const
 export type Status = (typeof statuses)[number]
 export type Update = {
+  noticeId?: number
   time: string
   source: string
   status: Status
@@ -44,7 +45,7 @@ export type Material = {
   date: string
 }
 export type Workspace = { jobs: Job[]; general: string; materials: Material[] }
-export type User = { id: string; name: string; email: string; phone: string | null }
+export type User = { id: string; name: string; email: string; phone: string; platforms: string[] }
 export type Upload = { id: string; name: string; data: string }
 export type Save = (state: Workspace, upload?: Upload | Upload[]) => Promise<void>
 export type Screenshot = { fileId: string; original: string; time: string; name?: string }

@@ -1,0 +1,20 @@
+services:
+  app:
+    environment:
+      WAYMARK_HTTPS_HOST: ${WAYMARK_LAN_IP:?Set the computer LAN IPv4 address}:8443
+      WAYMARK_HTTPS: "1"
+  iphone:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      WAYMARK_LAN_IP: ${WAYMARK_LAN_IP}
+    ports:
+      - "${WAYMARK_LAN_IP}:8443:8443"
+    volumes:
+      - ./deploy/iphone.Caddyfile:/etc/caddy/Caddyfile:ro
+      - iphone_tls:/data
+volumes:
+  iphone_tls:

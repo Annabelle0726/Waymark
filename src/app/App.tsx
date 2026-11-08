@@ -1,3 +1,4 @@
+import StatusAssistant from '../features/assistant/StatusAssistant'
 import { useEffect, useRef, useState } from 'react'
 import {
   Plus,
@@ -503,6 +504,16 @@ export default function App() {
             </footer>
           )}
         </main>
+        <StatusAssistant
+          jobs={state.jobs}
+          platforms={user.platforms}
+          onRecord={(job, entry) => save({
+            ...state,
+            jobs: state.jobs.map(j => j.id === job.id
+              ? { ...j, status: entry.status, updated: entry.time, history: [entry, ...j.history] }
+              : j),
+          })}
+        />
       </div>
       {previewMaterial && (
         <MaterialPreview
@@ -526,7 +537,15 @@ export default function App() {
           title={modal === 'add' ? '添加岗位' : '编辑岗位'}
           onClose={() => setModal('')}
         >
-          <JobForm job={modal === 'edit' ? job : undefined} onSave={storeJob} />
+          <JobForm
+            platforms={user.platforms}
+            bindPlatform={async name => {
+              const { platforms } = await api<{ platforms: string[] }>('platforms', 'POST', { name })
+              setUser(current => current && { ...current, platforms })
+            }}
+            job={modal === 'edit' ? job : undefined}
+            onSave={storeJob}
+          />
           {modal === 'edit' && (
             <button
               className="delete-job danger-text"
