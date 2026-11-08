@@ -8,7 +8,6 @@ import {
   BriefcaseBusiness,
   FolderOpen,
   CalendarDays,
-  LoaderCircle,
 } from 'lucide-react'
 import { type User } from '../../domain/workspace'
 import { api } from '../../services/api'
@@ -162,7 +161,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                   autoCapitalize="none"
                   spellCheck={false}
                   autoComplete="email"
-                  placeholder="name@example.com"
+                  placeholder="请输入邮箱地址"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -179,7 +178,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                   maxLength={256}
                   type={visible ? 'text' : 'password'}
                   autoComplete={register ? 'new-password' : 'current-password'}
-                  placeholder="至少 8 位字符"
+                  placeholder={register ? '至少 8 位字符' : '请输入密码'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -221,12 +220,6 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
               </label>
             )}
           </Form>
-          {submitting && (
-            <span className="auth-loading" role="status">
-              <LoaderCircle size={14} />
-              正在打开私人空间
-            </span>
-          )}
         </section>
       </div>
     </main>
