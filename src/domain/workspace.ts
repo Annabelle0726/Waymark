@@ -44,7 +44,7 @@ export type Material = {
   date: string
 }
 export type Workspace = { jobs: Job[]; general: string; materials: Material[] }
-export type User = { id: string; name: string; email: string }
+export type User = { id: string; name: string; email: string; phone: string | null }
 export type Upload = { id: string; name: string; data: string }
 export type Save = (state: Workspace, upload?: Upload | Upload[]) => Promise<void>
 export type Screenshot = { fileId: string; original: string; time: string; name?: string }

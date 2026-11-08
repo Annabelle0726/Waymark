@@ -1,3 +1,4 @@
+import { initAccounts } from './accounts.mjs'
 import { recognizeScreenshot } from './screenshot.mjs'
 import { mountAssistant } from './assistant.mjs'
 import { previewType } from './file-preview.mjs'
@@ -25,6 +26,7 @@ db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA secure_delete=O
  CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL, salt TEXT NOT NULL, hash TEXT NOT NULL, state TEXT NOT NULL, revision INTEGER DEFAULT 0);
  CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, owner TEXT REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS files(id TEXT, owner TEXT REFERENCES accounts(id) ON DELETE CASCADE, name TEXT NOT NULL, bytes BLOB NOT NULL, PRIMARY KEY(owner,id));`)
+initAccounts(db)
 const app = express()
 app.disable('x-powered-by')
 app.use((req, res, next) => {
@@ -43,7 +45,7 @@ const textField = (value, max = 200000) =>
 const digest = (token) => createHash('sha256').update(token).digest('hex')
 const hashPassword = promisify(scrypt)
 const newState = () => ({ jobs: [], general: '', materials: [] })
-const publicUser = (a) => ({ id: a.id, email: a.email, name: a.name })
+const publicUser = (a) => ({ id: a.id, email: a.email || '', name: a.name, phone: a.phone })
 const cookieOptions = {
   httpOnly: true,
   sameSite: 'strict',
@@ -104,35 +106,29 @@ app.post('/api/auth/:action', async (req, res) => {
   if (recent.length >= 16) fail(429, '尝试次数较多，请稍后重试')
   attempts.set(key, [...recent, Date.now()])
   const { name, password } = req.body
-  const email = String(req.body.email || '')
-    .trim()
-    .toLowerCase()
-  if (
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-    email.length > 254 ||
-    !textField(password, 256) ||
-    password.length < 8
-  )
-    fail(400, '请输入有效邮箱和至少 8 位的密码')
-  let account = sql('SELECT * FROM accounts WHERE email=?').get(email)
+  const rawPhone = String(req.body.phone || '').replace(/[ ()-]/g,'')
+  const phone = /^1[3-9]\d{9}$/.test(rawPhone) ? '+86'+rawPhone : rawPhone
+  if (!/^\+[1-9]\d{7,14}$/.test(phone)) fail(400,'请输入有效手机号；国际号码请包含国家区号')
+  if (!textField(password,256) || password.length < 8) fail(400,'密码至少 8 位')
+  let account = sql('SELECT * FROM accounts WHERE phone=?').get(phone)
   if (action === 'register') {
     if (!textField(name, 50) || !name.trim())
       fail(400, '请填写昵称（最多 50 字）')
     const salt = randomBytes(16).toString('hex')
     const hash = await hashPassword(password, salt, 64)
-    if (sql('SELECT id FROM accounts WHERE email=?').get(email))
-      fail(409, '邮箱已注册，请登录')
+    if (sql('SELECT id FROM accounts WHERE phone=?').get(phone))
+      fail(409, '手机号已注册，请登录')
     sql(
-      'INSERT INTO accounts(id,email,name,salt,hash,state) VALUES(?,?,?,?,?,?)',
+      'INSERT INTO accounts(id,email,name,salt,hash,state,phone) VALUES(?,?,?,?,?,?,?)',
     ).run(
       randomUUID(),
-      email,
+      null,
       name.trim(),
       salt,
       hash.toString('hex'),
-      JSON.stringify(newState()),
+      JSON.stringify(newState()), phone,
     )
-    account = sql('SELECT * FROM accounts WHERE email=?').get(email)
+    account = sql('SELECT * FROM accounts WHERE phone=?').get(phone)
   } else {
     const hash = await hashPassword(
       password,
@@ -140,7 +136,8 @@ app.post('/api/auth/:action', async (req, res) => {
       64,
     )
     if (!account || !timingSafeEqual(hash, Buffer.from(account.hash, 'hex')))
-      fail(401, '邮箱或密码不正确')
+      fail(401, '登录信息不正确')
+
   }
   signIn(res, account.id)
   res.json({ user: publicUser(account) })

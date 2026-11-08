@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   Eye,
   EyeOff,
-  Mail,
+  Phone,
   LockKeyhole,
   UserRound,
   BriefcaseBusiness,
@@ -55,7 +55,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
   const [visible, setVisible] = useState(false)
   const [confirmVisible, setConfirmVisible] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [email, setEmail] = useState('')
+  const [phone,setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [name, setName] = useState('')
@@ -159,6 +159,8 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                 key={String(register)}
                 label={register ? '注册并进入工作空间' : '登录'}
                 submit={async () => {
+                  if (!/^(?:1[3-9]\d{9}|\+[1-9]\d{7,14})$/.test(phone.replace(/[ ()-]/g, '')))
+                    throw new Error('请输入有效手机号，国际号码请包含国家区号')
                   if (register && confirm !== password)
                     throw new Error('两次输入的密码不一致')
                   setSubmitting(true)
@@ -166,7 +168,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                     const r = await api<{ user: User }>(
                       'auth/' + (register ? 'register' : 'login'),
                       'POST',
-                      { name, email, password },
+                      { name, phone, password },
                     )
                     await onUser(r.user)
                   } finally {
@@ -191,23 +193,8 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                     </div>
                   </label>
                 )}
-                <label htmlFor="auth-email">
-                  邮箱
-                  <div className="auth-input">
-                    <Mail />
-                    <input
-                      id="auth-email"
-                      required
-                      type="email"
-                      inputMode="email"
-                      autoCapitalize="none"
-                      spellCheck={false}
-                      autoComplete="email"
-                      placeholder="请输入邮箱地址"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
+                <label htmlFor="auth-phone">手机号
+                  <div className="auth-input"><Phone/><input id="auth-phone" type="tel" autoComplete="tel" required maxLength={24} value={phone} onChange={e=>setPhone(e.target.value)} placeholder="手机号或带区号的国际号码"/></div>
                 </label>
                 <label htmlFor="auth-password">
                   密码
@@ -264,6 +251,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                   </label>
                 )}
               </Form>
+
             </div>
           </section>
         </div>
