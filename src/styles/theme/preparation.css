@@ -9,20 +9,21 @@
   margin-inline: auto;
   color: var(--ink);
 }
-.preparation-main > .document-editor,
+.preparation-main > .document-editor:not(.document-focused),
 .preparation-main > .page-heading,
 .preparation-main > .page-intro {
   margin-inline-start: 0;
-}
-.preparation-main > .page-heading,
-.preparation-main > .page-intro {
-  max-width: 50rem;
+  width: min(100%, var(--content-width-list));
+  max-width: var(--content-width-list);
 }
 .preparation-main > .page-heading {
-  margin-bottom: var(--space-2);
+  min-height: calc(var(--space-10) - var(--space-1));
+  margin-bottom: var(--space-4);
 }
 .preparation-main > .page-heading h2 {
   font-size: var(--text-section);
+  font-weight: 600;
+  line-height: normal;
   letter-spacing: normal;
 }
 .preparation-main > .page-heading .heading-dash {

@@ -498,14 +498,7 @@ export default function App() {
                 <p>使用导航中的「添加岗位」，收录链接、文字或截图。</p>
               </div>
             ))}
-          {page === 'general' && (
-            <>
-              <p className="page-intro">
-                在这里整理可用于多个岗位的自我介绍、项目经历和常见问题。
-              </p>
-              {notes()}
-            </>
-          )}
+          {page === 'general' && notes()}
           {page === 'materials' && (
             <MaterialsPage materials={state.materials}
               onPreview={setPreviewMaterial}
