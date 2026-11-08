@@ -1,0 +1,128 @@
+.position-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--space-5);
+  border-radius: var(--radius-control);
+  background: var(--job-header-surface);
+}
+.position-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to right, var(--job-landscape-wash), transparent),
+    url('/brand/mountain-sea.svg') center 60% / cover;
+}
+.position-top,
+.position-company,
+.position-actions,
+.position-heading,
+.position-summary,
+.position-salary,
+.position-metadata,
+.position-metadata > span {
+  display: flex;
+  align-items: center;
+}
+.position-top,
+.position-heading {
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+.position-top { margin-bottom: var(--space-4); }
+.position-company {
+  min-width: 0;
+  gap: var(--space-2);
+  color: var(--muted);
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+.position-header svg {
+  flex-shrink: 0;
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.position-actions { gap: var(--space-2); flex-shrink: 0; }
+.position-actions button {
+  width: var(--job-action-width);
+  height: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  transition: background-color 180ms ease-out, color 180ms ease-out;
+}
+.position-actions .primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--row-accent);
+  border-color: var(--row-accent);
+  box-shadow: none;
+}
+.position-actions .primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+.position-heading h1 {
+  min-width: 0;
+  margin: 0;
+  font-size: var(--job-title-size);
+  font-weight: 600;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.position-summary { gap: var(--space-2); flex-shrink: 0; }
+.position-salary,
+.position-summary .status-pill {
+  min-height: var(--space-8);
+  padding: var(--space-1) var(--space-2);
+  background: var(--job-tag-surface);
+  border-radius: var(--radius-control);
+  color: var(--row-accent);
+  font-size: var(--text-small);
+}
+.position-salary { gap: var(--space-2); }
+.position-salary > span { color: var(--muted); }
+.position-salary strong { font-size: var(--job-salary-size); font-weight: 600; }
+.position-metadata {
+  gap: var(--space-3) var(--space-5);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+.position-metadata > span { gap: var(--space-2); min-width: 0; }
+.position-metadata span { overflow-wrap: anywhere; }
+.position-metadata b,
+.position-metadata time { color: var(--ink); font-weight: 400; }
+@media (hover: hover) {
+  .position-actions .outline:hover:not(:disabled) { background: var(--job-action-hover); }
+  .position-actions .primary:hover:not(:disabled) { background: var(--row-accent); }
+  .position-actions .primary:hover:not(:disabled)::before { opacity: .15; }
+}
+@media (max-width: 640px) {
+  .position-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); }
+  .position-top { grid-column: 1 / -1; order: 1; margin: 0; gap: var(--space-2); }
+  .position-company > svg { display: none; }
+  .position-actions button { width: var(--control-height); padding: 0; }
+  .position-actions button span { display: none; }
+  .position-heading,
+  .position-metadata { display: contents; }
+  .position-heading h1 { grid-column: 1 / -1; order: 2; }
+  .position-metadata > span { order: 5; }
+  .position-metadata > span:first-child { grid-column: 1 / -1; order: 3; }
+  .position-metadata > span:last-child { grid-column: 1 / -1; }
+  .position-updated-label { display: none; }
+  .position-summary { grid-column: 1 / -1; order: 4; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .position-actions button,
+  .position-actions .primary::before { transition: none; }
+}

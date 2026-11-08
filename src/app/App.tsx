@@ -17,8 +17,6 @@ import {
   Clock3,
   PanelLeftClose,
   PanelLeftOpen,
-  Pencil,
-  CirclePlus,
   ShieldCheck,
   FileText,
   UploadCloud,
@@ -453,33 +451,8 @@ export default function App() {
             (page === 'jobs' ? 'main-content jobs-main' : 'main-content') + (page === 'general' ? ' preparation-main' : '') + (page === 'settings' ? ' settings-main' : page === 'materials' ? ' materials-main' : '')
           }
         >
-          {page !== 'settings' && page !== 'materials' && (
-            <div className="page-heading">
-              <div>
-                <span className="heading-dash" />
-                <h2>{title}</h2>
-              </div>
-              <div className="actions">
-                {page === 'jobs' && job && (
-                  <>
-                    <button
-                      className="outline"
-                      onClick={() => setModal('edit')}
-                    >
-                      <Pencil />
-                      编辑岗位
-                    </button>
-                    <button
-                      className="primary"
-                      onClick={() => setModal('update')}
-                    >
-                      <CirclePlus />
-                      记录更新
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
+          {page === 'general' && (
+            <div className="page-heading"><h2>{title}</h2></div>
           )}
           {page === 'jobs' &&
             (job ? (
@@ -488,6 +461,8 @@ export default function App() {
                   job={job}
                   source={() => setModal('source')}
                   history={() => setModal('history')}
+                  edit={() => setModal('edit')}
+                  update={() => setModal('update')}
                 />
                 {notes(job)}
               </>

@@ -33,6 +33,13 @@
   --scroll-size: calc(var(--space-2) + 2 * var(--border-width));
   --scroll-inset: calc(2 * var(--border-width));
   --scroll-tip: calc(var(--space-1) + var(--border-width));
+  --job-title-size: 1.5rem;
+  --job-salary-size: 0.9375rem;
+  --job-action-width: 7rem;
+  --job-header-surface: color-mix(in srgb, var(--paper) 65%, var(--pale));
+  --job-tag-surface: color-mix(in srgb, var(--surface) 87%, transparent);
+  --job-landscape-wash: color-mix(in srgb, var(--paper) 92%, transparent);
+  --job-action-hover: color-mix(in srgb, var(--blue) 8%, var(--surface));
   --radius-control: 0.5rem;
   --text-small: 0.8125rem;
   --text-body: 0.875rem;

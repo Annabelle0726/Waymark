@@ -27,6 +27,8 @@
 
 ## 3. Content bounds and headings
 
+- Job headers MUST use the local mountain-and-sea image with a readable light wash. Desktop metadata places location, remote requirement, update time and source on one wrapping row. Keep edit/update buttons equal at 112 by 44px, or 44px square with accessible labels on mobile. Salary and progress MUST be separate compact tags, with salary text at 15px. Mobile header bottom padding MUST be 16px; avoid a fixed minimum height.
+
 - Jobs, preparation, materials and settings MUST share the workspace gutter for the topbar and main column. Feature styles MUST NOT offset the breadcrumb. Anchor the preparation heading, introduction and normal editor to that same start even when the sidebar is collapsed.
 
 - The breadcrumb MUST start with an operable sidebar toggle directly before the workspace label. Align left-aligned page content with the left edge of the toggle icon, using the same gutter. Center the 16px glyph on both axes inside a 32px desktop button or 44px mobile target. Keep its left edge on the content gutter. On desktop, collapsing MUST release the sidebar column and leave the toggle reachable. On mobile, use the navigation drawer. Both controls MUST expose their accessible name, controlled region and expanded state.

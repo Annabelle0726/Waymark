@@ -1,10 +1,10 @@
 import {
-  BriefcaseBusiness,
+  Pencil,
+  CirclePlus,
   MapPin,
   Building2,
   Coins,
   Monitor,
-  CircleDot,
   Clock3,
   FileText,
   History,
@@ -20,7 +20,6 @@ import {
   tags,
   type Job,
 } from '../../domain/workspace'
-import RouteMap from '../../components/brand/RouteMap'
 export function StatusPill({ status }: { status: string }) {
   return (
     <span
@@ -40,9 +39,13 @@ export default function JobDetail({
   job,
   source,
   history,
+  edit,
+  update,
 }: {
   job: Job
   source: () => void
+  edit: () => void
+  update: () => void
   history: () => void
 }) {
   const missing = fieldKeys.filter((k) => !job[k]?.trim()).map((k) => fields[k])
@@ -50,57 +53,26 @@ export default function JobDetail({
     missing.push('投递状态' as (typeof missing)[number])
   return (
     <>
-      <section className="job-cover">
-        <div className="cover-main">
-          <RouteMap />
-          <div className="cover-copy">
-            <div className="cover-eyebrow">
-              <BriefcaseBusiness size={14} />
-              岗位档案
-            </div>
-            <h1>{job.title || '岗位待确认'}</h1>
-            <div className="cover-meta">
-              <span>
-                <Building2 />
-                {job.company || '公司待确认'}
-              </span>
-              <i />
-              <span>
-                <MapPin />
-                {job.location || '待确认'}
-              </span>
-            </div>
+      <section className="position-header" aria-label="岗位概览">
+        <div className="position-top">
+          <div className="position-company"><Building2 aria-hidden="true" /><span>{job.company || '公司待确认'}</span></div>
+          <div className="position-actions">
+            <button type="button" className="outline" onClick={edit} aria-label="编辑岗位" title="编辑岗位"><Pencil aria-hidden="true" /><span>编辑岗位</span></button>
+            <button type="button" className="primary" onClick={update} aria-label="记录更新" title="记录更新"><CirclePlus aria-hidden="true" /><span>记录更新</span></button>
           </div>
         </div>
-        <div className="facts">
-          <div>
-            <span>
-              <Coins />
-              薪资范围
-            </span>
-            <strong>{job.salary || '待确认'}</strong>
-          </div>
-          <div>
-            <span>
-              <Monitor />
-              远程要求
-            </span>
-            <strong>{job.remote || '待确认'}</strong>
-          </div>
-          <div>
-            <span>
-              <CircleDot />
-              投递状态
-            </span>
+        <div className="position-heading">
+          <h1>{job.title || '岗位待确认'}</h1>
+          <div className="position-summary">
+            <span className="position-salary"><Coins aria-hidden="true" /><span>薪资</span><strong>{job.salary || '待确认'}</strong></span>
             <StatusPill status={job.status} />
           </div>
-          <div>
-            <span>
-              <Clock3 />
-              最近更新
-            </span>
-            <strong>{stamp(job.updated)}</strong>
-          </div>
+        </div>
+        <div className="position-metadata">
+          <span><MapPin aria-hidden="true" /><span>{job.location || '地点待确认'}</span></span>
+          <span><Monitor aria-hidden="true" /><span>远程要求 <b>{job.remote || '待确认'}</b></span></span>
+          <span><Clock3 aria-hidden="true" /><span><span className="position-updated-label">更新于 </span><time dateTime={job.updated}>{stamp(job.updated)}</time></span></span>
+          <span><Layers3 aria-hidden="true" /><span>来源 <b>{job.platform || '待确认'}</b></span></span>
         </div>
       </section>
       <div className="detail-grid">
