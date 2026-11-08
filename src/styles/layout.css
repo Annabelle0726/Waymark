@@ -481,7 +481,9 @@ button:active:not(:disabled) {
 .crumb .icon-btn {
   width: var(--control-height);
   height: var(--control-height);
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
+  margin-inline-start: calc((var(--space-4) - var(--control-height)) / 2);
   padding: 0;
   color: var(--ink);
 }
@@ -490,6 +492,11 @@ button:active:not(:disabled) {
   height: var(--space-4);
 }
 @media (min-width: 761px) {
+  .crumb .desktop-panel {
+    width: var(--space-8);
+    height: var(--space-8);
+    margin-inline-start: calc((var(--space-4) - var(--space-8)) / 2);
+  }
   .app-shell.sidebar-collapsed {
     grid-template-columns: minmax(0, 1fr);
   }
