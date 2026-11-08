@@ -1,6 +1,6 @@
 .document-editor {
   --document-width: 50rem;
-  --document-focus-width: 45rem;
+  --document-focus-width: calc(100% - var(--space-8) * 2);
   --document-line-height: 1.7;
   --document-preview-lines: 6;
   --document-toolbar-layer: 8;
@@ -108,7 +108,14 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-inline: var(--space-2);
+  background: color-mix(in srgb, var(--pale) 65%, transparent);
+  border-bottom: var(--border-width) solid var(--line);
+}
+.document-block > .document-reading,
+.document-block > textarea {
+  padding-inline: var(--space-3);
 }
 .document-title-input,
 .document-editor h3,
@@ -206,7 +213,11 @@
   content: '';
   position: absolute;
   inset-inline: 0;
-  border-top: var(--border-width) solid var(--line);
+  border-top: var(--border-width) solid transparent;
+}
+.document-insert:hover:before,
+.document-insert:focus-within:before {
+  border-top-color: var(--line);
 }
 .document-insert button {
   position: relative;
@@ -356,6 +367,15 @@
 .document-focus-body .document-title-input {
   margin-bottom: var(--space-4);
 }
+.document-focus-body > textarea {
+  min-height: calc(
+    100dvh - var(--control-height) * 2 - var(--space-8) * 2 - var(--space-4) - env(safe-area-inset-bottom)
+  );
+  padding: var(--space-4);
+  border-color: var(--line);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+}
 .document-done {
   gap: var(--space-1);
 }
@@ -405,7 +425,7 @@
     border-top: var(--border-width) solid var(--line);
   }
   .document-editor .document-body > div + div .document-block {
-    border-top: var(--border-width) solid var(--line);
+    border-top: 0;
   }
   .document-questions {
     padding-inline-start: var(--space-2);
@@ -426,7 +446,10 @@
     z-index: calc(var(--document-focus-layer) + 2);
   }
   .document-editor:has(textarea:focus) {
-    padding-bottom: calc(var(--control-height) + var(--space-6));
+    padding-bottom: calc(var(--control-height) + var(--space-6) + env(safe-area-inset-bottom));
+  }
+  .document-editor.document-focused {
+    padding-bottom: calc(var(--control-height) + var(--space-6) + env(safe-area-inset-bottom));
   }
   .document-action-menu {
     position: fixed;
@@ -453,7 +476,13 @@
     order: -2;
   }
   .document-focus-body {
+    max-width: none;
     padding: var(--space-6) var(--space-4);
+  }
+  .document-focus-body > textarea {
+    min-height: calc(
+      100dvh - var(--control-height) * 2 - var(--space-6) * 2 - var(--space-4) - env(safe-area-inset-bottom)
+    );
   }
 }
 

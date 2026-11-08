@@ -223,7 +223,7 @@ export default function Notes({
   }, [focus])
   useEffect(() => {
     const viewport = window.visualViewport
-    const update = () => {
+    const update = (event?: Event) => {
       const el = document.activeElement
       const visible = Boolean(
         el instanceof HTMLTextAreaElement && root.current?.contains(el),
@@ -237,7 +237,7 @@ export default function Notes({
         ),
         visible,
       })
-      if (visible)
+      if (visible && event?.type !== 'scroll' && event?.type !== 'focusout')
         requestAnimationFrame(() => {
           if (el instanceof HTMLTextAreaElement) {
             revealCaret(el, viewport, root.current)
