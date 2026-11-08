@@ -8,9 +8,6 @@
   max-width: none;
   margin-inline: 0;
 }
-.main-content.settings-main {
-  padding-inline-start: var(--workspace-header-gutter);
-}
 .settings-page h2 {
   font-family: inherit;
   font-size: var(--text-section);
@@ -170,7 +167,6 @@
 }
 @media (max-width: 640px) {
   .settings-main {
-    padding-inline: var(--space-4);
     padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
   }
   .settings-info-row {

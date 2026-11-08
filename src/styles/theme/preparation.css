@@ -9,10 +9,14 @@
   margin-inline: auto;
   color: var(--ink);
 }
+.preparation-main > .document-editor,
+.preparation-main > .page-heading,
+.preparation-main > .page-intro {
+  margin-inline-start: 0;
+}
 .preparation-main > .page-heading,
 .preparation-main > .page-intro {
   max-width: 50rem;
-  margin-inline: auto;
 }
 .preparation-main > .page-heading {
   margin-bottom: var(--space-2);
@@ -358,9 +362,6 @@
   padding-top: var(--space-4);
 }
 @media (max-width: 640px) {
-  .main-content.preparation-main {
-    padding-inline: var(--space-4);
-  }
   .document-toolbar {
     gap: var(--space-1);
     justify-content: space-between;

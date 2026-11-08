@@ -1,11 +1,3 @@
-.main-content.materials-main {
-  max-width: none;
-  margin-inline: 0;
-  padding-inline: var(--space-8);
-}
-.workspace:has(.materials-main) .topbar {
-  padding-inline: var(--space-8);
-}
 .materials-page {
   --materials-row-height: calc(var(--control-height) + var(--space-3));
   --materials-motion: 180ms;
@@ -312,10 +304,6 @@
   }
 }
 @media (max-width: 640px) {
-  .main-content.materials-main,
-  .workspace:has(.materials-main) .topbar {
-    padding-inline: var(--space-4);
-  }
   .materials-table-head,
   .material-type,
   .material-date,

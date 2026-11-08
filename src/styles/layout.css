@@ -448,7 +448,7 @@ button:active:not(:disabled) {
   color: var(--muted);
 }
 .workspace {
-  --workspace-header-gutter: 35px;
+  --workspace-header-gutter: var(--space-8);
   min-width: 0;
 }
 .topbar {
@@ -521,9 +521,9 @@ button:active:not(:disabled) {
   margin: auto;
   padding: 24px clamp(23px, 2.5vw, 42px) 12px;
 }
-.main-content.jobs-main {
+.workspace > .main-content {
   margin-inline-start: 0;
-  padding-inline-start: var(--workspace-header-gutter);
+  padding-inline: var(--workspace-header-gutter);
 }
 .page-heading,
 .page-heading > div:first-child,
@@ -1201,7 +1201,7 @@ button:active:not(:disabled) {
 }
 @media (max-width: 1150px) {
   .workspace {
-    --workspace-header-gutter: 20px;
+    --workspace-header-gutter: var(--space-6);
   }
   .app-shell {
     grid-template-columns: 232px minmax(0, 1fr);
