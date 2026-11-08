@@ -1,0 +1,117 @@
+.document-preview {
+  width: min(1100px, 96vw);
+  height: 90dvh;
+  max-height: 96dvh;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  background: #f4f7fb;
+}
+.document-preview[open] {
+  display: flex;
+  flex-direction: column;
+}
+.document-preview::backdrop {
+  background: #192b4680;
+  backdrop-filter: blur(3px);
+}
+.document-preview .dialog-head {
+  flex-shrink: 0;
+}
+.document-preview h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.document-preview .actions {
+  flex-shrink: 0;
+}
+.document-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.document-body iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+.document-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 20px auto;
+}
+.document-message {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 16px;
+  min-height: 200px;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+.document-hint {
+  padding: 10px 18px;
+  font-size: 12px;
+  color: var(--muted);
+  background: #fff;
+}
+.document-text,
+.document-word {
+  margin: 20px auto;
+  width: min(800px, calc(100% - 32px));
+  padding: 28px;
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.document-text {
+  font: inherit;
+  white-space: pre-wrap;
+}
+.document-word p {
+  margin: 0 0 12px;
+}
+.document-word h1,
+.document-word h2,
+.document-word h3 {
+  margin: 20px 0 10px;
+}
+.document-word table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.document-word td,
+.document-word th {
+  border: 1px solid var(--line);
+  padding: 8px;
+}
+@media (max-width: 760px) {
+  .document-preview {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+  .document-preview .dialog-head {
+    padding: 12px;
+    gap: 8px;
+  }
+  .document-preview .dialog-head h2 {
+    font-size: 16px;
+  }
+  .document-preview .outline {
+    padding: 7px;
+    font-size: 12px;
+  }
+  .document-text,
+  .document-word {
+    padding: 16px;
+  }
+}

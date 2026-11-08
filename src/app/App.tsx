@@ -44,6 +44,7 @@ import {
 import { Dialog, Form } from '../components/forms/Forms'
 import { JobForm, UpdateForm } from '../features/jobs/JobForms'
 import { MaterialForm } from '../features/materials/MaterialForm'
+import MaterialPreview from '../features/materials/MaterialPreview'
 import { Auth } from '../features/auth/Auth'
 import Notes from '../features/notes/Notes'
 import JobDetail, { StatusPill } from '../features/jobs/JobDetail'
@@ -67,6 +68,7 @@ const pageNames: Record<Page, string> = {
 const empty: Workspace = { jobs: [], general: '', materials: [] }
 const companyIcons = [Layers3, Hexagon, Triangle]
 export default function App() {
+  const [previewMaterial, setPreviewMaterial] = useState<Material>()
   const [state, setState] = useState<Workspace>(empty),
     [user, setUser] = useState<User | null>(null),
     [ready, setReady] = useState(false),
@@ -88,6 +90,7 @@ export default function App() {
     lock = useRef(false)
   const job = state.jobs.find((j) => j.id === selected)
   function reset(data: Workspace, u: User | null, rev: number) {
+    setPreviewMaterial(undefined)
     setState(data)
     setUser(u)
     revision.current = rev
@@ -533,6 +536,13 @@ export default function App() {
                     </div>
                     <div className="actions">
                       <button
+                        className="outline"
+                        aria-label={'预览 ' + m.name}
+                        onClick={() => setPreviewMaterial(m)}
+                      >
+                        预览
+                      </button>
+                      <button
                         className="icon-btn"
                         aria-label={'下载 ' + m.name}
                         onClick={() => act(() => download(m.fileId))}
@@ -634,6 +644,13 @@ export default function App() {
           </footer>
         </main>
       </div>
+      {previewMaterial && (
+        <MaterialPreview
+          material={previewMaterial}
+          onClose={() => setPreviewMaterial(undefined)}
+          onDownload={() => act(() => download(previewMaterial.fileId))}
+        />
+      )}
       {toast && (
         <div className="toast" role="alert">
           <AlertCircle />

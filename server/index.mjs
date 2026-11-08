@@ -1,5 +1,6 @@
 import { recognizeScreenshot } from './screenshot.mjs'
 import { mountAssistant } from './assistant.mjs'
+import { previewType } from './file-preview.mjs'
 import express from 'express'
 import { DatabaseSync } from 'node:sqlite'
 import {
@@ -284,6 +285,18 @@ app.put('/api/workspace', (req, res) => {
     db.exec('ROLLBACK')
     throw error
   }
+})
+app.get('/api/files/:id/preview', (req, res) => {
+  const file = sql('SELECT name,bytes FROM files WHERE owner=? AND id=?').get(
+    req.account.id,
+    req.params.id,
+  )
+  if (!file) fail(404, '文件不存在')
+  const bytes = Buffer.from(file.bytes)
+  const type = previewType(file.name, bytes)
+  if (!type)
+    fail(415, '此格式暂不支持预览。支持 PDF、DOCX、PNG、JPEG、GIF、WebP 和 UTF-8 文本，可下载原文件查看。')
+  res.set('Content-Type', type).send(bytes)
 })
 app.get('/api/files/:id', (req, res) => {
   const file = sql('SELECT name,bytes FROM files WHERE owner=? AND id=?').get(
