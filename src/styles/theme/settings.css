@@ -1,0 +1,201 @@
+.settings-page {
+  width: min(100%, var(--content-width-compact));
+  margin-inline: auto;
+  color: var(--ink);
+  font-size: var(--text-body);
+}
+.settings-page h2 {
+  font-family: inherit;
+  font-size: var(--text-section);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.settings-info {
+  margin: var(--space-4) 0 var(--space-5);
+}
+.settings-info-row {
+  display: grid;
+  grid-template-columns: calc(var(--space-10) * 2) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-4);
+  min-height: var(--control-height);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width) solid var(--line);
+}
+.settings-info dt {
+  padding-block: var(--space-3);
+  color: var(--muted);
+}
+.settings-info dd {
+  min-width: 0;
+  margin: 0;
+  padding-block: var(--space-3);
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.settings-info-row:has(.settings-name-value) dd,
+.settings-info-row:has(.settings-name-editor) dd {
+  padding-block: 0;
+}
+.settings-name-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+}
+.settings-name-value span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.settings-page button {
+  min-height: var(--control-height);
+}
+.settings-name-value .icon-btn {
+  width: var(--control-height);
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.settings-name-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-2);
+}
+.settings-name-editor input {
+  min-width: 0;
+  width: 100%;
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.settings-name-editor input:focus-visible {
+  outline: var(--border-width) solid var(--blue);
+  outline-offset: var(--border-width);
+}
+.settings-edit-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.settings-feedback {
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+.settings-feedback.danger-text {
+  color: var(--danger);
+}
+.settings-logout {
+  font-weight: 500;
+}
+.settings-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  color: var(--muted);
+  font-size: var(--text-small);
+  line-height: 1.8;
+}
+.settings-privacy svg {
+  flex: none;
+  width: var(--space-4);
+  height: var(--space-4);
+  margin-top: var(--space-1);
+}
+.settings-danger {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--line);
+}
+.settings-danger p {
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--muted);
+  line-height: 1.8;
+}
+.settings-delete {
+  margin-top: var(--space-3);
+  padding-inline: var(--space-3);
+  border: var(--border-width) solid currentColor;
+  border-radius: var(--radius-control);
+}
+.settings-delete-dialog .form-body p {
+  font-size: var(--text-body);
+  line-height: 1.8;
+}
+.settings-delete-dialog button {
+  min-height: var(--control-height);
+}
+.settings-delete-dialog .icon-btn {
+  width: var(--control-height);
+}
+.settings-delete-dialog .form-foot {
+  gap: var(--space-2);
+}
+.settings-delete-form .primary {
+  border-color: currentColor;
+  background: var(--surface);
+  color: var(--danger);
+  box-shadow: none;
+}
+.settings-delete-form .primary svg {
+  display: none;
+}
+.settings-page button:focus-visible,
+.settings-delete-dialog button:focus-visible {
+  outline: var(--border-width) solid var(--blue);
+  outline-offset: var(--space-1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .settings-name-value .icon-btn:hover {
+    background: var(--pale);
+    color: var(--blue);
+  }
+  .settings-delete:hover:not(:disabled),
+  .settings-delete-form .primary:hover:not(:disabled) {
+    background: var(--paper);
+    color: var(--danger);
+  }
+}
+@media (max-width: 640px) {
+  .settings-main {
+    padding-inline: var(--space-4);
+    padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+  .settings-info-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+    padding-block: var(--space-3);
+  }
+  .settings-info dt,
+  .settings-info dd {
+    padding-block: 0;
+  }
+  .settings-name-value {
+    justify-content: space-between;
+  }
+  .settings-name-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-name-editor input,
+  .settings-delete-form input {
+    font-size: var(--text-section);
+  }
+  .settings-logout {
+    width: 100%;
+  }
+  .settings-delete-dialog {
+    width: calc(100% - var(--space-8));
+    max-height: calc(100dvh - var(--space-8));
+  }
+  .settings-delete-dialog .form-body {
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+  .settings-delete-dialog .form-foot {
+    flex-wrap: wrap;
+  }
+}

@@ -982,29 +982,8 @@ button:active:not(:disabled) {
   font-size: 16px;
   margin-top: 4px;
 }
-.settings-card dl {
-  display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 16px;
-  margin: 12px 22px 25px;
-  font-size: 14px;
-}
-.settings-card dt {
-  color: var(--muted);
-}
-.settings-card dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.settings-actions {
-  border-top: 1px solid var(--line);
-  padding: 14px 20px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 .danger-text {
-  color: #a74141;
+  color: var(--danger);
   font-size: 12px;
 }
 .toast {
@@ -1397,10 +1376,7 @@ button:active:not(:disabled) {
     inset: 0;
     border-radius: 0;
   }
-  .settings-card dl {
-    grid-template-columns: 65px 1fr;
-    margin: 15px;
-  }
+
   .file-card {
     padding: 13px;
     flex-wrap: wrap;

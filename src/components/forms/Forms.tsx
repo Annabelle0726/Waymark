@@ -12,11 +12,15 @@ export function Dialog({
   children,
   onClose,
   wide = false,
+  className = '',
+  confirmDiscard = true,
 }: {
   title: string
   children: ReactNode
   onClose: () => void
   wide?: boolean
+  className?: string
+  confirmDiscard?: boolean
 }) {
   const ref = useRef<HTMLDialogElement>(null)
   const dirty = useRef(false)
@@ -27,12 +31,12 @@ export function Dialog({
   }, [])
   function close() {
     if (ref.current?.querySelector('[aria-busy="true"]')) return
-    if (!dirty.current || window.confirm('放弃尚未提交的表单内容？')) onClose()
+    if (!confirmDiscard || !dirty.current || window.confirm('放弃尚未提交的表单内容？')) onClose()
   }
   return (
     <dialog
       ref={ref}
-      className={'dialog ' + (wide ? 'wide' : '')}
+      className={['dialog', wide ? 'wide' : '', className].filter(Boolean).join(' ')}
       aria-label={title}
       onClick={e => { if ((e.target as HTMLElement).closest('[data-dirties]')) dirty.current = true }}
       onDrop={() => { dirty.current = true }}
@@ -62,12 +66,14 @@ export function Form({
   label,
   submitDisabled = false,
   className,
+  onCancel,
 }: {
   children: ReactNode
   submit: () => Promise<void>
   label: string
   submitDisabled?: boolean
   className?: string
+  onCancel?: () => void
 }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
@@ -95,6 +101,7 @@ export function Form({
           </p>
         )}
         <div className="form-foot">
+          {onCancel && <button className="outline" type="button" onClick={onCancel}>取消</button>}
           <button className="primary" type="submit" disabled={submitDisabled || busy}>
             {busy ? '正在处理…' : label}
             <ArrowRight size={16} />

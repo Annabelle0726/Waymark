@@ -19,12 +19,10 @@ import {
   Pencil,
   CirclePlus,
   ShieldCheck,
-  LogOut,
   FileText,
   UploadCloud,
   Download,
   Trash2,
-  CircleUserRound,
   Compass,
   AlertCircle,
 } from 'lucide-react'
@@ -41,7 +39,8 @@ import {
   type Upload,
   type Save,
 } from '../domain/workspace'
-import { Dialog, Form } from '../components/forms/Forms'
+import { Dialog } from '../components/forms/Forms'
+import Settings from '../features/settings/Settings'
 import { JobForm, UpdateForm } from '../features/jobs/JobForms'
 import { MaterialForm } from '../features/materials/MaterialForm'
 import MaterialPreview from '../features/materials/MaterialPreview'
@@ -57,8 +56,6 @@ type Modal =
   | 'source'
   | 'history'
   | 'material'
-  | 'profile'
-  | 'deleteAccount'
 const pageNames: Record<Page, string> = {
   jobs: '我的岗位',
   general: '通用面试准备',
@@ -83,9 +80,7 @@ export default function App() {
     [material, setMaterial] = useState<Material>(),
     [toast, setToast] = useState(''),
     [dirty, setDirty] = useState(false)
-  const [name, setName] = useState(''),
-    [password, setPassword] = useState(''),
-    [instance, setInstance] = useState(0)
+  const [instance, setInstance] = useState(0)
   const revision = useRef(0),
     lock = useRef(false)
   const job = state.jobs.find((j) => j.id === selected)
@@ -104,8 +99,6 @@ export default function App() {
     setJobsOpen(true)
     setInstance((n) => n + 1)
     setMaterial(undefined)
-    setName('')
-    setPassword('')
     setToast('')
   }
   async function loadWorkspace(u: User) {
@@ -451,7 +444,8 @@ export default function App() {
             本机私人空间
           </div>
         </header>
-        <main className="main-content">
+        <main className={'main-content' + (page === 'settings' ? ' settings-main' : '')}>
+          {page !== 'settings' && (
           <div className="page-heading">
             <div>
               <span className="heading-dash" />
@@ -487,6 +481,7 @@ export default function App() {
               )}
             </div>
           </div>
+          )}
           {page === 'jobs' &&
             (job ? (
               <>
@@ -581,60 +576,14 @@ export default function App() {
               </div>
             ))}
           {page === 'settings' && (
-            <section className="card settings-card">
-              <header className="card-head">
-                <h2>
-                  <span className="section-icon">
-                    <CircleUserRound />
-                  </span>
-                  个人信息
-                </h2>
-              </header>
-              <dl>
-                <dt>昵称</dt>
-                <dd>{user.name}</dd>
-                <dt>邮箱</dt>
-                <dd>{user.email}</dd>
-                <dt>数据保存</dt>
-                <dd>
-                  岗位、笔记和上传文件按账号保存在本机服务的 SQLite 数据库中。
-                </dd>
-                <dt>外部服务</dt>
-                <dd>
-                  面试准备由本人编辑并保存在本机。岗位截图在本机识别，招聘平台尚未接入。
-                </dd>
-              </dl>
-              <div className="settings-actions">
-                <button
-                  className="outline"
-                  onClick={() => {
-                    setName(user.name)
-                    setModal('profile')
-                  }}
-                >
-                  <Pencil />
-                  编辑昵称
-                </button>
-                <button className="outline" onClick={() => act(logout)}>
-                  <LogOut />
-                  退出登录
-                </button>
-                <button
-                  className="danger-text"
-                  onClick={() => {
-                    setPassword('')
-                    setModal('deleteAccount')
-                  }}
-                >
-                  删除账号与数据
-                </button>
-              </div>
-            </section>
+            <Settings user={user} onUser={setUser} onLogout={logout} onDeleted={() => reset(empty, null, 0)} />
           )}
-          <footer className="workspace-foot">
-            <ShieldCheck size={14} />
-            个人资料仅保存在本机服务
-          </footer>
+          {page !== 'settings' && (
+            <footer className="workspace-foot">
+              <ShieldCheck size={14} />
+              个人资料仅保存在本机服务
+            </footer>
+          )}
         </main>
       </div>
       {previewMaterial && (
@@ -756,53 +705,7 @@ export default function App() {
           />
         </Dialog>
       )}
-      {modal === 'profile' && (
-        <Dialog title="编辑个人信息" onClose={() => setModal('')}>
-          <Form
-            label="保存个人信息"
-            submit={async () => {
-              const r = await api<{ user: User }>('account', 'PATCH', { name })
-              setUser(r.user)
-              setModal('')
-            }}
-          >
-            <label>
-              昵称
-              <input
-                required
-                maxLength={50}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-          </Form>
-        </Dialog>
-      )}
-      {modal === 'deleteAccount' && (
-        <Dialog title="删除账号与全部私人数据" onClose={() => setModal('')}>
-          <Form
-            label="永久删除账号"
-            submit={async () => {
-              await api('account', 'DELETE', { password })
-              reset(empty, null, 0)
-              setPassword('')
 
-            }}
-          >
-            <p>此操作将永久删除岗位、笔记和上传文件。请输入密码确认。</p>
-            <label>
-              当前密码
-              <input
-                required
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </label>
-          </Form>
-        </Dialog>
-      )}
     </div>
   )
 }

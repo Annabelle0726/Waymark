@@ -6,6 +6,23 @@
   --pale: #eef6f8;
   --gold: #c7a15c;
   --paper: #f3f9fd;
+  --surface: #ffffff;
+  --danger: #a74141;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --control-height: 2.75rem;
+  --content-width-compact: 44rem;
+  --border-width: 1px;
+  --radius-control: 0.5rem;
+  --text-small: 0.8125rem;
+  --text-body: 0.875rem;
+  --text-section: 1rem;
   --display-font:
     'Microsoft YaHei UI', 'PingFang SC', 'Noto Sans CJK SC', system-ui,
     sans-serif;
