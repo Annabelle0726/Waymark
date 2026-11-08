@@ -270,7 +270,6 @@ export default function App() {
       key={instance + '-' + (j?.id || 'general')}
       job={j}
       value={j ? j.note : state.general}
-      materials={state.materials}
       onDirty={setDirty}
       onSave={async (note) => {
         await save(

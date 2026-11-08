@@ -125,29 +125,6 @@ export const tags = (s: string) =>
     .split(/[,，、;；\n]+/)
     .map((x) => x.trim())
     .filter(Boolean)
-export function prepareDraft(job: Job | undefined, materials: Material[]) {
-  const evidence = materials
-    .filter((m) => m.summary.trim())
-    .map((m) => '· ' + m.name + '：' + m.summary)
-    .join('\n')
-  return [
-    job ? job.title + ' · 面试提纲' : '通用面试提纲',
-    '自我介绍\n待补充：求职方向及与岗位相关的真实经历。',
-    '项目经历\n' +
-      (evidence
-        ? '已填写的资料摘要\n' +
-          evidence +
-          '\n待补充：个人职责、具体行动与结果。'
-        : '待补充：项目背景、个人职责、行动与结果。'),
-    '技术与业务问题\n' +
-      (job?.skills
-        ? tags(job.skills)
-            .map((s) => '· 如何在项目中使用 ' + s + '？\n  我的回答：待补充')
-            .join('\n')
-        : '待补充：根据岗位要求整理问题与回答。'),
-    '向面试官提问\n· 团队希望这个岗位优先解决什么问题？',
-  ].join('\n\n')
-}
 export async function readUpload(file: File): Promise<Upload> {
   if (file.size > 10 * 1024 * 1024)
     throw new Error('文件超过 10 MB，请选择较小的文件')

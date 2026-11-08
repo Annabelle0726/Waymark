@@ -1,131 +1,125 @@
-import OnlineDraft from './OnlineDraft'
-import { useEffect, useRef, useState } from 'react'
+import Preview from './Preview'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
+  Heading2,
+  Bold,
+  List,
   NotebookPen,
   Expand,
   Minimize2,
-  Save as SaveIcon,
-  Sparkles,
-  Heading2,
-  List,
-  Bold,
-  PencilLine,
-  Eye,
+  Save,
+  Plus,
+  Trash2,
   Check,
-  Circle,
+  Eye,
+  PencilLine,
 } from 'lucide-react'
-import { prepareDraft, type Job, type Material } from '../../domain/workspace'
+import { uid, type Job } from '../../domain/workspace'
+import {
+  readPreparation,
+  writePreparation,
+  type PreparationSection,
+} from '../../domain/preparation'
+import Review from './Review'
 
-function Preview({ value }: { value: string }) {
-  return (
-    <div className="note-preview">
-      {value.split('\n').map((line, i) => {
-        const parts = line
-          .replace(/^(## |[-·] )/, '')
-          .split(/(\*\*[^*]+\*\*)/g)
-          .map((p, n) =>
-            p.startsWith('**') && p.endsWith('**') ? (
-              <strong key={n}>{p.slice(2, -2)}</strong>
-            ) : (
-              p
-            ),
-          )
-        return line.startsWith('## ') ? (
-          <h3 key={i}>{parts}</h3>
-        ) : (
-          <div key={i}>
-            {/^[-·] /.test(line) ? '• ' : ''}
-            {parts}
-            {!line && <br />}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 export default function Notes({
   job,
   value,
-  materials,
   onSave,
   onDirty,
 }: {
   job?: Job
   value: string
-  materials: Material[]
   onSave: (v: string) => Promise<void>
   onDirty: (dirty: boolean) => void
 }) {
-  const [draft, setDraft] = useState(value),
-    [full, setFull] = useState(false),
-    [preview, setPreview] = useState(false),
-    [busy, setBusy] = useState(false),
-    [err, setErr] = useState('')
-  const input = useRef<HTMLTextAreaElement>(null),
-    container = useRef<HTMLElement>(null),
+  const baseline = useMemo(
+    () => writePreparation(readPreparation(value)),
+    [value],
+  )
+  const [draft, setDraft] = useState(() => readPreparation(value))
+  const [full, setFull] = useState(false),
+    [preview, setPreview] = useState(false)
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState('')
+  const container = useRef<HTMLElement>(null),
     toggle = useRef<HTMLButtonElement>(null)
-  const [online, setOnline] = useState(false)
-  const dirty = value !== draft
+  const active = useRef<HTMLTextAreaElement | null>(null)
+  const serialized = writePreparation(draft),
+    dirty = serialized !== baseline
   useEffect(() => {
     onDirty(dirty)
     return () => onDirty(false)
   }, [dirty, onDirty])
   useEffect(() => {
     if (!full) return
-    const prev = document.body.style.overflow
+    const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    input.current?.focus()
+    container.current?.querySelector<HTMLTextAreaElement>('textarea')?.focus()
     function key(e: KeyboardEvent) {
-      if (document.querySelector('dialog[open]')) return
       if (e.key === 'Escape') {
         setFull(false)
         toggle.current?.focus()
       }
       if (e.key === 'Tab') {
-        const focus = container.current?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled),textarea:not(:disabled)',
+        const nodes = container.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled),input:not(:disabled),textarea:not(:disabled),summary',
         )
-        if (!focus?.length) return
-        const first = focus[0],
-          last = focus[focus.length - 1]
+        const visible = Array.from(nodes || []).filter(
+          (el) => el.getClientRects().length,
+        )
+        const first = visible[0],
+          last = visible[visible.length - 1]
         if (e.shiftKey && document.activeElement === first) {
           e.preventDefault()
-          last.focus()
+          last?.focus()
         }
         if (!e.shiftKey && document.activeElement === last) {
           e.preventDefault()
-          first.focus()
+          first?.focus()
         }
       }
     }
     window.addEventListener('keydown', key)
     return () => {
       window.removeEventListener('keydown', key)
-      document.body.style.overflow = prev
+      document.body.style.overflow = previous
     }
   }, [full])
   async function save() {
     if (busy) return
     setBusy(true)
-    setErr('')
+    setError('')
     try {
-      await onSave(draft)
+      await onSave(serialized)
     } catch (e) {
-      setErr((e as Error).message)
+      setError((e as Error).message)
     } finally {
       setBusy(false)
     }
   }
+  function edit(id: string, patch: Partial<PreparationSection>) {
+    setDraft((d) => ({
+      ...d,
+      sections: d.sections.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+    }))
+  }
   function format(prefix: string, suffix = '') {
-    const el = input.current
-    if (!el) return
-    const a = el.selectionStart,
-      b = el.selectionEnd
-    const inner = draft.slice(a, b) || (suffix ? '重点' : '')
-    setDraft(draft.slice(0, a) + prefix + inner + suffix + draft.slice(b))
+    const el = active.current
+    if (!el || !container.current?.contains(el)) return
+    const start = el.selectionStart,
+      end = el.selectionEnd
+    const text = el.value.slice(start, end)
+    edit(el.dataset.section!, {
+      content:
+        el.value.slice(0, start) + prefix + text + suffix + el.value.slice(end),
+    })
     requestAnimationFrame(() => {
       el.focus()
-      el.setSelectionRange(a + prefix.length, a + prefix.length + inner.length)
+      el.setSelectionRange(
+        start + prefix.length,
+        start + prefix.length + text.length,
+      )
     })
   }
   return (
@@ -134,14 +128,20 @@ export default function Notes({
       role={full ? 'dialog' : undefined}
       aria-modal={full || undefined}
       aria-label={job ? '岗位专属面试准备' : '通用面试准备'}
-      className={'card notes ' + (full ? 'full' : '')}
+      className={'card notes preparation ' + (full ? 'full' : '')}
+      onKeyDown={(e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault()
+          void save()
+        }
+      }}
     >
       <header className="card-head">
         <h2>
           <span className="section-icon">
             <NotebookPen />
           </span>
-          {job ? '岗位专属面试准备' : '通用准备笔记'}
+          {job ? '岗位专属面试准备' : '通用面试准备'}
         </h2>
         <div className="actions">
           <button
@@ -157,7 +157,7 @@ export default function Notes({
             disabled={busy || !dirty}
             onClick={save}
           >
-            <SaveIcon />
+            <Save />
             {busy ? '保存中' : '保存笔记'}
           </button>
         </div>
@@ -180,93 +180,132 @@ export default function Notes({
           </button>
           <i />
           <button
-            title="插入标题"
             aria-label="插入标题"
-            disabled={preview}
+            disabled={busy || preview}
             onClick={() => format('\n## ')}
           >
             <Heading2 />
           </button>
           <button
-            title="加粗"
             aria-label="加粗"
-            disabled={preview}
+            disabled={busy || preview}
             onClick={() => format('**', '**')}
           >
             <Bold />
           </button>
           <button
-            title="插入列表"
             aria-label="插入列表"
-            disabled={preview}
+            disabled={busy || preview}
             onClick={() => format('\n- ')}
           >
             <List />
           </button>
         </div>
-        <div>
-          <button
-            className="draft-btn"
-            onClick={() => {
-              setDraft((d) =>
-                [d.trimEnd(), prepareDraft(job, materials)]
-                  .filter(Boolean)
-                  .join('\n\n'),
-              )
-              setPreview(false)
-            }}
-          >
-            <Sparkles />
-            离线提纲
-          </button>
-          <button className="draft-btn" onClick={() => setOnline(true)}>
-            在线草稿
-          </button>
-        </div>
-      </div>
-      {preview ? (
-        <Preview value={draft || '尚无笔记内容'} />
-      ) : (
-        <textarea
-          ref={input}
-          className="note-input"
-          aria-label="面试笔记正文"
-          placeholder="从自我介绍、项目经历或一个想问的问题开始…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-              e.preventDefault()
-              void save()
-            }
+        <button
+          className="text-btn"
+          disabled={busy}
+          onClick={() => {
+            setDraft((d) => ({
+              ...d,
+              sections: [
+                ...d.sections,
+                { id: uid(), title: '新区域', content: '' },
+              ],
+            }))
+            setPreview(false)
           }}
+        >
+          <Plus />
+          添加区域
+        </button>
+      </div>
+      <div className="preparation-body">
+        {draft.sections.map((s) => (
+          <section
+            className="preparation-block"
+            key={s.id}
+            aria-label={s.title || '未命名区域'}
+          >
+            <div className="preparation-row">
+              {s.id === 'intro' ? (
+                <h3>自我介绍</h3>
+              ) : (
+                <label className="section-title-label">
+                  区域标题
+                  <input
+                    disabled={busy}
+                    value={s.title}
+                    onChange={(e) => edit(s.id, { title: e.target.value })}
+                  />
+                </label>
+              )}
+              {s.id !== 'intro' && (
+                <button
+                  className="icon-btn"
+                  disabled={busy}
+                  aria-label={'删除区域 ' + s.title}
+                  onClick={() => {
+                    if (confirm('删除这个区域及其中的内容？'))
+                      setDraft((d) => ({
+                        ...d,
+                        sections: d.sections.filter((x) => x.id !== s.id),
+                      }))
+                  }}
+                >
+                  <Trash2 />
+                </button>
+              )}
+            </div>
+            {preview ? (
+              <Preview value={s.content || '尚未填写'} />
+            ) : (
+              <textarea
+                className="preparation-text"
+                data-section={s.id}
+                onFocus={(e) => {
+                  active.current = e.currentTarget
+                }}
+                disabled={busy}
+                aria-label={
+                  s.id === 'intro'
+                    ? '自我介绍正文'
+                    : (s.title || '区域') + '正文'
+                }
+                value={s.content}
+                onChange={(e) => edit(s.id, { content: e.target.value })}
+                placeholder={
+                  s.id === 'intro'
+                    ? '可以从求职方向、相关技能和一段真实项目经历开始，简洁介绍自己的职责与成果…'
+                    : '填写项目背景、个人职责、关键行动与结果，或整理技术问题、业务问题和向面试官的提问…'
+                }
+              />
+            )}
+          </section>
+        ))}
+        <Review
+          groups={draft.reviews}
+          disabled={busy || preview}
+          onChange={(reviews) => setDraft((d) => ({ ...d, reviews }))}
         />
-      )}
+      </div>
       <footer className="note-status">
         <span role="status">
-          {dirty ? <Circle size={11} /> : <Check size={13} />}{' '}
-          {busy
-            ? '正在保存'
-            : dirty
-              ? '有未保存的修改'
-              : '已保存到本机'}
+          <Check size={13} />
+          {busy ? '正在保存' : dirty ? '有未保存的修改' : '已保存到本机'}
         </span>
-        <span>{draft.length} 字</span>
+        <span>
+          {draft.sections.reduce((n, s) => n + s.content.length, 0) +
+            draft.reviews.reduce(
+              (n, g) =>
+                n + g.questions.reduce((m, q) => m + q.answer.length, 0),
+              0,
+            )}{' '}
+          字
+        </span>
       </footer>
-      {online && (
-        <OnlineDraft
-          job={job}
-          onClose={() => setOnline(false)}
-          insert={(text) => {
-            setDraft((d) => [d.trimEnd(), text].filter(Boolean).join('\n\n'))
-            setPreview(false)
-            setOnline(false)
-          }}
-        />
-      )}
-      {err && (
+      {error && (
         <p role="alert" className="error">
-          {err}
+          {error}
         </p>
       )}
     </section>
