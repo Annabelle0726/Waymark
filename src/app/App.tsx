@@ -15,7 +15,8 @@ import {
   Hexagon,
   Monitor,
   Clock3,
-  PanelLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
   Pencil,
   CirclePlus,
   ShieldCheck,
@@ -68,6 +69,7 @@ export default function App() {
     [expanded, setExpanded] = useState(''),
     [jobsOpen, setJobsOpen] = useState(true)
   const [query, setQuery] = useState(''),
+    [sidebarCollapsed, setSidebarCollapsed] = useState(false),
     [drawer, setDrawer] = useState(false),
     [modal, setModal] = useState<Modal>(''),
     [toast, setToast] = useState(''),
@@ -86,6 +88,7 @@ export default function App() {
     setExpanded(data.jobs[0]?.id || '')
     setModal('')
     setDirty(false)
+    setSidebarCollapsed(false)
     setDrawer(false)
     setQuery('')
     setJobsOpen(true)
@@ -272,7 +275,7 @@ export default function App() {
     />
   )
   return (
-    <div className="app-shell">
+    <div className={sidebarCollapsed ? 'app-shell sidebar-collapsed' : 'app-shell'}>
       {drawer && (
         <button
           aria-label="关闭导航遮罩"
@@ -281,6 +284,7 @@ export default function App() {
         />
       )}
       <aside
+        id="workspace-sidebar"
         className={'sidebar ' + (drawer ? 'open' : '')}
         aria-label="工作空间导航"
       >
@@ -417,12 +421,24 @@ export default function App() {
           <div className="crumb">
             <button
               aria-label="打开导航"
+              aria-controls="workspace-sidebar"
+              aria-expanded={drawer}
               className="menu-btn icon-btn"
               onClick={() => setDrawer(true)}
             >
               <Menu />
             </button>
-            <PanelLeft className="desktop-panel" />
+            <button
+              type="button"
+              className="desktop-panel icon-btn"
+              aria-label={sidebarCollapsed ? '展开侧栏' : '收起侧栏'}
+              title={sidebarCollapsed ? '展开侧栏' : '收起侧栏'}
+              aria-expanded={!sidebarCollapsed}
+              aria-controls="workspace-sidebar"
+              onClick={() => setSidebarCollapsed(value => !value)}
+            >
+              {sidebarCollapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+            </button>
             <span>工作空间</span>
             <ChevronRight />
             <strong>{pageNames[page]}</strong>
@@ -434,7 +450,7 @@ export default function App() {
         </header>
         <main
           className={
-            'main-content' + (page === 'general' ? ' preparation-main' : '') + (page === 'settings' ? ' settings-main' : page === 'materials' ? ' materials-main' : '')
+            (page === 'jobs' ? 'main-content jobs-main' : 'main-content') + (page === 'general' ? ' preparation-main' : '') + (page === 'settings' ? ' settings-main' : page === 'materials' ? ' materials-main' : '')
           }
         >
           {page !== 'settings' && page !== 'materials' && (

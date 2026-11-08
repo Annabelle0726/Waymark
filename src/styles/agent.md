@@ -27,6 +27,8 @@
 
 ## 3. Content bounds and headings
 
+- The breadcrumb MUST start with an operable sidebar toggle directly before the workspace label. Align left-aligned page content with the left edge of the toggle icon, using the same gutter. Center the icon and breadcrumb text vertically. On desktop, collapsing MUST release the sidebar column and leave the toggle reachable. On mobile, use the navigation drawer. Both controls MUST expose their accessible name, controlled region and expanded state.
+
 - Reading, form and settings content MUST have a 640–720px column cap. Prefer `--content-width-compact` (44rem / 704px). Individual fields and short sign-in forms may be narrower.
 - Editors use 760–820px; the document editor uses 50rem / 800px. Lists and tables follow the available space with 24–32px desktop gutters and an approximately 1100px maximum content width, aligned left with the breadcrumb. Avoid large blank margins on both sides of list pages.
 - Keep the primary action on the heading row at the column edge. A breadcrumb naming the page MUST NOT be followed by the same large title. If another heading is needed, use a compact heading sharing the action row, without an accent bar.

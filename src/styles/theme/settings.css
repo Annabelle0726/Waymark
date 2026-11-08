@@ -8,13 +8,8 @@
   max-width: none;
   margin-inline: 0;
 }
-@media (min-width: 761px) {
-  .settings-main {
-    padding-inline-start: calc(
-      var(--workspace-header-gutter) + var(--space-4) + var(--space-3) +
-        var(--space-1) / 2
-    );
-  }
+.main-content.settings-main {
+  padding-inline-start: var(--workspace-header-gutter);
 }
 .settings-page h2 {
   font-family: inherit;

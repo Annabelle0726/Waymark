@@ -478,11 +478,24 @@ button:active:not(:disabled) {
   height: 13px;
   width: 13px;
 }
-.crumb .desktop-panel {
-  width: 16px;
-  height: 16px;
-  color: #677a93;
-  margin-right: 2px;
+.crumb .icon-btn {
+  width: var(--control-height);
+  height: var(--control-height);
+  justify-content: flex-start;
+  padding: 0;
+  color: var(--ink);
+}
+.crumb .icon-btn svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+@media (min-width: 761px) {
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar-collapsed > .sidebar {
+    display: none;
+  }
 }
 .environment {
   font-size: 11px;
@@ -500,6 +513,10 @@ button:active:not(:disabled) {
   max-width: 1510px;
   margin: auto;
   padding: 24px clamp(23px, 2.5vw, 42px) 12px;
+}
+.main-content.jobs-main {
+  margin-inline-start: 0;
+  padding-inline-start: var(--workspace-header-gutter);
 }
 .page-heading,
 .page-heading > div:first-child,
@@ -1242,6 +1259,9 @@ button:active:not(:disabled) {
   }
 }
 @media (max-width: 760px) {
+  .workspace {
+    --workspace-header-gutter: var(--space-4);
+  }
   .app-shell {
     display: block;
   }
@@ -1278,7 +1298,7 @@ button:active:not(:disabled) {
   }
   .topbar {
     height: 53px;
-    padding: 0 15px;
+    padding: 0 var(--workspace-header-gutter);
   }
   .crumb {
     gap: 6px;
