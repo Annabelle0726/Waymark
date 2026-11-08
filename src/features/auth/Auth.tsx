@@ -99,11 +99,10 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
         <div className="auth-layout">
           <section className="auth-intro" aria-label="Waymark 求职工作空间">
             <div className="auth-message">
-              <h1>
-                <span>求职进展，</span>
-                <span>一目了然。</span>
-              </h1>
-              <p>收拢岗位信息，跟进每一次投递。</p>
+              <h1>让下一程，更从容</h1>
+              <p>
+                把心仪的机会、投递的进展与面试前的准备，妥帖地收在一处。愿每一次认真出发，都离理想的下一站更近一点。
+              </p>
             </div>
             <ul className="auth-features">
               <li>

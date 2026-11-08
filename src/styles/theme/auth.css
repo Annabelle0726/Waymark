@@ -38,7 +38,7 @@
 }
 .auth-frame {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--content-width-auth);
   min-height: calc(var(--auth-height, 100dvh) - 48px);
   margin: 0 auto;
   display: flex;
@@ -110,16 +110,14 @@
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.01em;
-}
-.auth-message h1 span {
-  display: block;
   white-space: nowrap;
 }
 .auth-message p {
   margin-top: 18px;
   color: var(--auth-secondary);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.85;
+  text-wrap: pretty;
 }
 .auth-features {
   display: flex;
@@ -131,19 +129,26 @@
 .auth-features li {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 10px;
-  border: var(--border-width) solid var(--line);
-  border-radius: 20px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid
+    color-mix(in srgb, var(--blue) 16%, var(--line));
+  border-radius: var(--radius-control);
   white-space: nowrap;
   color: var(--auth-secondary);
-  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--surface) 85%, transparent),
+    color-mix(in srgb, var(--paper) 65%, transparent)
+  );
   font-size: 12px;
   line-height: 1.5;
 }
 .auth-features svg {
   width: 15px;
   height: 15px;
+  color: color-mix(in srgb, var(--blue) 72%, var(--ink));
+  stroke-width: 1.6;
 }
 .auth-landscape {
   position: absolute;
@@ -555,6 +560,7 @@
     padding: 28px;
   }
   .auth-features {
+    flex-wrap: wrap;
     gap: 5px;
   }
   .auth-features li {
@@ -617,14 +623,27 @@
   }
   .auth-message p {
     margin-top: 8px;
-    font-size: 12px;
-    white-space: nowrap;
+    font-size: var(--text-small);
+    line-height: 1.8;
+    white-space: normal;
   }
   .auth-backdrop {
     opacity: 0.025;
   }
   .auth-features {
-    display: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: var(--space-4);
+  }
+  .auth-features li {
+    padding: var(--space-1) var(--space-2);
+    gap: 6px;
+    font-size: var(--text-small);
+  }
+  .auth-features svg {
+    width: 13px;
+    height: 13px;
   }
   .auth-landscape {
     top: 48px;
