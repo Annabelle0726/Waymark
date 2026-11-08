@@ -399,19 +399,22 @@ button:active:not(:disabled) {
   color: #255bc2;
 }
 .side-bottom {
-  padding: 10px 20px 12px;
+  padding: var(--space-3) var(--space-5)
+    calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: var(--border-width) solid var(--line);
   background: #fcfdff;
 }
 .account {
   display: flex;
+  align-items: center;
   gap: 10px;
   text-align: left;
   width: 100%;
-  border-top: 1px solid var(--line);
-  padding: 12px 6px 5px;
+  border: 0;
+  padding: var(--space-3);
   margin-top: 0;
-  border-radius: 7px;
-  min-height: 52px;
+  border-radius: var(--radius-control);
+  min-height: calc(var(--control-height) + var(--space-4));
 }
 .avatar {
   flex: none;
@@ -433,13 +436,16 @@ button:active:not(:disabled) {
 }
 .account strong {
   font-size: 12px;
+  line-height: 1.4;
 }
 .account small {
   font-size: 10px;
   color: #6a7b92;
-  margin-top: 3px;
+  margin-top: var(--space-1);
+  line-height: 1.4;
 }
 .account > svg {
+  flex-shrink: 0;
   color: #8391a7;
 }
 .side-empty {

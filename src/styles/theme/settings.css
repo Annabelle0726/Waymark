@@ -1,5 +1,5 @@
 .settings-page {
-  width: min(100%, var(--content-width-compact));
+  width: min(100%, var(--content-width-list));
   margin-inline: 0;
   color: var(--ink);
   font-size: var(--text-body);
@@ -45,6 +45,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  justify-content: space-between;
   min-height: var(--control-height);
 }
 .settings-name-value span {
@@ -111,9 +112,16 @@
   margin-top: var(--space-1);
 }
 .settings-danger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-6);
   margin-top: var(--space-8);
   padding-top: var(--space-6);
   border-top: var(--border-width) solid var(--line);
+}
+.settings-danger h2 {
+  grid-column: 1 / -1;
 }
 .settings-danger p {
   margin-top: var(--space-2);
@@ -122,7 +130,8 @@
   line-height: 1.8;
 }
 .settings-delete {
-  margin-top: var(--space-3);
+  grid-column: 2;
+  grid-row: 2;
   padding-inline: var(--space-3);
   border: var(--border-width) solid currentColor;
   border-radius: var(--radius-control);
@@ -190,6 +199,12 @@
   }
   .settings-logout {
     width: 100%;
+  }
+  .settings-danger {
+    display: block;
+  }
+  .settings-delete {
+    margin-top: var(--space-3);
   }
   .settings-delete-dialog {
     width: calc(100% - var(--space-8));
