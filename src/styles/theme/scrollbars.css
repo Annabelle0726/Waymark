@@ -16,31 +16,31 @@
     }
     ::-webkit-scrollbar-thumb {
       --fill: var(--scroll-thumb);
-      border: var(--scroll-tip) solid transparent;
+      border: var(--scroll-inset) solid transparent;
       background-origin: padding-box;
       background-clip: padding-box;
       background-repeat: no-repeat;
     }
     ::-webkit-scrollbar-thumb:vertical {
       min-height: var(--space-6);
-      background-image: conic-gradient(at 50% 0%, transparent 120deg, var(--fill) 120deg 240deg, transparent 240deg),
+      background-image: conic-gradient(at 50% 0%, transparent 149deg, var(--fill) 149deg 211deg, transparent 211deg),
         linear-gradient(var(--fill), var(--fill)),
-        conic-gradient(at 50% 100%, var(--fill) 60deg, transparent 60deg 300deg, var(--fill) 300deg);
+        conic-gradient(at 50% 100%, var(--fill) 31deg, transparent 31deg 329deg, var(--fill) 329deg);
       background-position: top, center, bottom;
       background-size: 100% var(--scroll-tip), 100% calc(100% - 2 * var(--scroll-tip)), 100% var(--scroll-tip);
     }
     ::-webkit-scrollbar-thumb:horizontal {
       min-width: var(--space-6);
-      background-image: conic-gradient(at 0% 50%, transparent 30deg, var(--fill) 30deg 150deg, transparent 150deg),
+      background-image: conic-gradient(at 0% 50%, transparent 59deg, var(--fill) 59deg 121deg, transparent 121deg),
         linear-gradient(var(--fill), var(--fill)),
-        conic-gradient(at 100% 50%, transparent 210deg, var(--fill) 210deg 330deg, transparent 330deg);
+        conic-gradient(at 100% 50%, transparent 239deg, var(--fill) 239deg 301deg, transparent 301deg);
       background-position: left, center, right;
       background-size: var(--scroll-tip) 100%, calc(100% - 2 * var(--scroll-tip)) 100%, var(--scroll-tip) 100%;
     }
     @media (hover: hover) {
-      ::-webkit-scrollbar-thumb:hover { --fill: var(--blue); }
+      ::-webkit-scrollbar-thumb:hover { --fill: color-mix(in srgb, var(--scroll-thumb) 78%, var(--blue)); }
     }
-    ::-webkit-scrollbar-thumb:active { --fill: var(--ink); }
+    ::-webkit-scrollbar-thumb:active { --fill: color-mix(in srgb, var(--scroll-thumb) 64%, var(--blue)); }
   }
   @supports not selector(::-webkit-scrollbar) {
     * { scrollbar-color: var(--scroll-thumb) var(--scroll-rail); }

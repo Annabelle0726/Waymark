@@ -86,7 +86,7 @@
 
 ## 10. Color and token ownership
 
-- All app-owned scroll containers MUST use the shared scrollbar theme for both axes: blue thumb, pale rail and subtle tapered ends where supported. Preserve native input, forced colors and auto-growing document fields. Do not override thumb styling per page.
+- All app-owned scroll containers MUST use the shared scrollbar theme for both axes: light-blue thumb, transparent track and 5px pointed ends where supported. Preserve native input, forced colors and auto-growing document fields. Do not override thumb styling per page.
 
 - Load order comes from `src/styles/index.css`: base layout, shared theme tokens, then feature styles. Use `src/styles/theme/tokens.css` as the shared token source.
 - Reuse `--blue` for action color, `--ink` and `--muted` for text, `--line` for dividers, `--paper` and `--surface` for backgrounds. Use the existing 4/8/12/16/20/24/32/40px spacing steps and 13/14/16px text tokens where applicable.
