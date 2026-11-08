@@ -1,12 +1,12 @@
-# Waymark 个人求职工作空间
+# Waymark personal job workspace
 
-在自己的电脑上整理岗位、跟进投递、保存资料和准备面试。React 与 TypeScript 构建网页，Node.js 与 Express 提供本机认证、文件和工作空间接口。一个 Docker 容器提供网页和后端，SQLite 使用宿主机目录保存数据。
+Waymark runs on your computer. React and TypeScript provide the web interface. Node.js and Express handle authentication, files and account-scoped workspace requests. One Docker container serves the website and API. SQLite stores records and attachment bytes on the host.
 
-## 在本机启动
+## Start locally
 
-需要 Git、Docker Desktop（Windows 使用 Linux 容器）或 Docker Engine，以及带有 `--wait` 支持的 Docker Compose v2 或更高版本。首次构建需要联网下载基础镜像和 npm 依赖；已有镜像后，日常离线使用无需云服务器。
+Install Git and Docker Desktop with Linux containers on Windows, or Docker Engine with Docker Compose v2 or later supporting `--wait`. The first build downloads the base image, packages and OCR dependencies. Once built, the local workspace runs offline.
 
-在已有项目目录打开 PowerShell。新电脑可先运行以下命令：
+From a new computer, clone the repository. For an existing checkout, open PowerShell in the project directory.
 
 ```powershell
 git clone https://github.com/Annabelle0726/Waymark.git
@@ -18,28 +18,21 @@ docker compose up -d --build --wait
 docker compose ps
 ```
 
-打开 [本机工作空间](http://127.0.0.1:4173)。默认端口仅绑定本机回环地址。首次打开会进入登录页。已有账号可直接登录，新用户点击「还没有账号？注册」。注册成功后进入空白私人工作空间。登录状态有效时刷新会恢复自己的工作空间，退出登录后返回登录页。
+Open the [local workspace](http://127.0.0.1:4173). The published port accepts loopback connections. Sign in or register for an empty personal workspace. A valid session restores your workspace on refresh. Signing out returns you to authentication.
 
-Compose 自动绑定项目下的 `data/` 和 `private/`。原生 Linux 上请先创建这两个目录，并确保容器用户 UID 1000 可写 `data/`、可读 `private/backend.env`。端口被占用时可在项目根目录的本机 `.env` 写入 `WAYMARK_PORT=4174`，然后再次运行启动命令。更改端口会改变浏览器访问地址。
+Compose mounts `data/` for storage and `private/` read-only for configuration. On native Linux, create both directories first. Container UID 1000 needs write access to `data/` and read access to `private/backend.env` if present. To use a different port, set `WAYMARK_PORT=4174` in the local root `.env` file and repeat the startup command.
 
-## 面试准备与本地配置
+## Using the workspace
 
-面试准备由本人填写，不需要 API Key。第一块固定为自我介绍，可继续添加并命名其他区域。空输入框显示填写提示，提示文字不会保存为个人经历。重点复习采用分组、问题两级折叠结构，可编辑分组名称、问题和答案，并通过保存笔记统一持久化。
+- **Jobs.** Each position has its own ID, even at the same company. Expand a sidebar entry to see its platform, progress and update time. Add a job through manual entry, a link, pasted text or screenshots. Review the fields before saving.
+- **Sources.** The original text, link, screenshot or manual snapshot stays with the job. The text parser accepts one supported field label and value per line, separated by a colon. Links retain the address. Missing fields stay unconfirmed. Keep personal additions separate from source text. Progress updates record their time and source.
+- **Screenshots.** Select, drop or paste PNG or JPEG images. Local Tesseract reads Simplified Chinese and English in the Docker image. Review the extracted text and candidate values. Add further screenshots to fill empty fields, enlarge thumbnails, or remove individual images before saving. Each image can be up to 10 MB, with up to 40 MB of new images per submission. Unreadable or partial images can still be retained as sources. See the [intake specification](docs/screenshot-intake.md).
+- **Preparation.** Write a self-introduction and add named sections. In focused review, use groups containing individual questions and editable answers. Prompts are placeholders. General preparation and individual job notes are saved independently. Older plain-text notes open in a legacy section. Normal and enlarged editing share one draft. Use the editor's save controls or Ctrl/Cmd + S. On a version conflict, copy the unsaved text, refresh and merge your edits.
+- **Materials.** Upload, rename, summarize, preview, download, replace or delete account-owned files. Each file can be up to 10 MB. Local previews support PDF, DOCX, PNG, JPEG, GIF, WebP, and UTF-8 TXT, Markdown, CSV and JSON. DOCX previews preserve paragraphs and tables. Download the original for complex layouts, embedded images or unsupported formats such as DOC.
+- **Settings.** View your email, edit your nickname, sign out, or confirm your password to delete the account and its data. Passwords use salted scrypt hashes. Sessions use HttpOnly cookies. The API checks account ownership for workspaces and attachments. Anyone with access to the host database or Docker administration can read local data.
+- **Integration scope.** Interview preparation requires no API key. The optional DeepSeek backend accepts a key in `private/backend.env`; the empty template is `backend.env.example`. The preparation UI has no online drafting entry. Mini programs, cross-device sync, recruiting-platform authorization, personal agent integration, automatic applications, outbound messages and email password recovery are outside the current implementation.
 
-早期的整篇笔记会显示在“原有笔记”区域。岗位专属与通用准备仍各自独立。底层使用带版本标记的结构保存在原有笔记字段中，继续使用账号访问控制、版本冲突检测与 SQLite 事务。
-
-后端保留可选 DeepSeek 接口，配置文件为本机 private/backend.env，模板为 backend.env.example。面试准备页面已移除在线草稿入口。
-
-## 日常使用
-
-- **岗位**按独立 ID 保存，同公司多个职位可分别管理。侧栏展开岗位可查看平台、进度和时间。使用唯一的「添加岗位」入口选择手动、链接、文字或截图，核对后保存。
-- **原始来源**保存最初的文字、链接、截图或手动录入快照。文字提取支持每行一个带中文或英文冒号的字段，如「公司：虚构公司」「岗位：前端工程师」。链接保存地址。多选、拖入或连续粘贴 PNG、JPEG 截图后，Docker 内置的 Tesseract 会在本机读取简体中文及英文，展示可编辑候选字段和识别原文。残缺截图可直接保存，日后可在「编辑岗位」中追加截图，只补空字段；点缩略图可放大，点删除可移除对应截图，保存后生效。单张 10 MB，一次新增最多 40 MB；识别不清时可更换图片或只保留原图。直接运行 Node 开发模式时，OCR 需要 PATH 中的 tesseract 及 chi_sim、eng 语言包。缺失字段显示「待确认」。可编辑岗位、填写用户补充、查看原文或记录带来源的进度更新。
-- **笔记**支持添加区域、标题、加粗、列表标记和预览。普通编辑与放大编辑共享草稿，支持清空、手动保存及 Ctrl/Cmd + S。多页面发生版本冲突时会拒绝旧版本写入；先复制草稿，再刷新并合并。通用笔记与各岗位笔记独立。
-- **资料**支持上传、在线预览、下载、修改名称和摘要、替换文件及删除。点击「预览」可查看 PDF、DOCX、PNG、JPEG、GIF、WebP 及 UTF-8 编码的 TXT、Markdown、CSV、JSON。Word 内容预览保留段落和表格，复杂版式及内嵌图片请下载原件查看；旧版 DOC 等未支持格式会提示下载。预览在本机和浏览器中完成，沿用账号访问权限。单个文件最大 10 MB。资料文件和截图保存在 SQLite 的附件表内。
-- **设置**提供个人昵称、邮箱、数据说明、退出登录及输入密码删除账号。密码使用随机盐和 scrypt 派生值保存，登录使用 HttpOnly 会话 cookie。数据库按账号检查工作空间和附件访问权限。持有本机数据库文件或 Docker 管理权限的人仍能读取本机数据，备份请放在自己控制的目录。
-- 当前没有小程序、跨设备同步、招聘平台授权、Dot personal agent、自动投递、消息发送或邮箱找回密码服务。
-
-## 停止、更新与日志
+## Stop, update and inspect logs
 
 ```powershell
 docker compose stop
@@ -47,22 +40,20 @@ docker compose start
 docker compose logs --tail=80 app
 ```
 
-移除容器与网络可运行 `docker compose down`。再次运行 `docker compose up -d --wait` 即可使用原有宿主机数据。
-
-更新前先完成下方备份，再在工作目录运行：
+To remove the container and network, run `docker compose down`. Run `docker compose up -d --wait` to reuse the existing host data. Back up before updating, then run:
 
 ```powershell
 git pull --ff-only
 docker compose up -d --build --wait
 ```
 
-应用不记录请求正文、个人资料或密钥。日志可见启动信息和运行时提示。排查配置时使用 `docker compose config --quiet`。
+Application logs omit request bodies, private records and API keys. Use `docker compose config --quiet` to validate configuration without printing resolved values.
 
-## 数据位置、备份与恢复
+## Storage, backup and restore
 
-默认数据库是项目下的 `data/workspace.sqlite`。账号、会话、岗位、历史、通用笔记、专属笔记、资料信息和文件字节都在同一数据库中。运行期间还可能有 `workspace.sqlite-wal` 和 `workspace.sqlite-shm`。挂载目标为 `/var/lib/waymark`。停止、替换容器或更新镜像会继续使用同一宿主机目录。私有配置独立存放在 `private/backend.env`。
+The default host database is `data/workspace.sqlite`, mounted under `/var/lib/waymark`. Accounts, sessions, jobs, history, notes, material metadata and attachment bytes reside in it. SQLite may also create `workspace.sqlite-wal` and `workspace.sqlite-shm`. Keep the same host directory when replacing the container. Keep private configuration in `private/backend.env`.
 
-以下 PowerShell 操作针对默认目录。在同一个终端中执行，备份时停掉所有访问该数据库的服务（包括本地开发进程）：
+For the default directory, stop every service writing to this database, including any native development process. Run the following PowerShell commands in one terminal:
 
 ```powershell
 docker compose stop
@@ -73,25 +64,25 @@ Get-ChildItem (Join-Path $backupDir "data") -Name
 docker compose start
 ```
 
-备份包含个人资料和登录会话。密钥配置单独保管。以下恢复方式将备份复制到**新目录**，保留现有数据，适合先检查恢复结果。把第一行改成实际备份路径：
+Backups include private records and sessions. Store keys separately. Restore into a fresh directory so the current database stays available:
 
 ```powershell
-$backupDir = Read-Host "输入要恢复的备份目录（其中应有 data 子目录）"
+$backupDir = Read-Host "Backup directory containing the data folder"
 $restoreDir = Join-Path $env:LOCALAPPDATA ("Waymark-Restored/" + (Get-Date -Format "yyyyMMdd-HHmmss"))
-if (-not (Test-Path (Join-Path $backupDir "data/workspace.sqlite"))) { throw "未找到备份数据库" }
+if (-not (Test-Path (Join-Path $backupDir "data/workspace.sqlite"))) { throw "Backup database missing" }
 New-Item -ItemType Directory -Path $restoreDir -ErrorAction Stop | Out-Null
 Copy-Item -LiteralPath (Join-Path $backupDir "data") -Destination $restoreDir -Recurse -ErrorAction Stop
-$env:WAYMARK_DATA_DIR = (Join-Path $restoreDir "data")
+$env:WAYMARK_DATA_DIR = Join-Path $restoreDir "data"
 docker compose up -d --force-recreate --wait
 ```
 
-登录并核对岗位、笔记，下载一个附件检查。要长期使用恢复目录，请在项目根目录的本机 `.env` 设置 `WAYMARK_DATA_DIR=C:/实际路径/data`（Windows 路径使用正斜杠）。该变量也能指定其他本机存储位置。更换设备或移动仓库时，需手动复制数据和私有配置。
+Sign in, check a job and note, and download an attachment. To keep using the restored directory across terminals, set `WAYMARK_DATA_DIR=C:/actual/path/data` in the local root `.env`. Use forward slashes for Windows paths there. Moving to a new computer requires copying data and private configuration yourself.
 
-应用内永久删除、移除宿主机数据目录或用旧库覆盖当前库都会造成数据丢失。只备份 SQLite 主文件可能遗漏尚在 WAL 中的写入。长期备份和私有配置勿放入 Git 或公开网盘。
+Deleting an account, removing the data directory, or overwriting a database with an older copy can destroy records. Copying only the main file may omit pending WAL writes. Keep backups and private configuration out of Git and public storage.
 
-## 开发模式
+## Development
 
-需要 Node.js 24.14 或更高的 24.x 版本。Docker 用户无需安装 Node.js。为避免两个实例跨环境同时写同一数据库，先停止 Docker 容器，或为开发服务指定独立目录：
+Use Node.js 24.14 or later in the 24.x series. Docker users do not need Node.js on the host. For a separate development database:
 
 ```powershell
 $env:WAYMARK_DATA = Join-Path $env:LOCALAPPDATA "Waymark-dev/data"
@@ -99,4 +90,6 @@ npm ci
 npm run dev
 ```
 
-开发地址为 [本机开发工作台](http://127.0.0.1:5173)。`npm run build` 执行 TypeScript 检查与前端构建，`npm start` 使用构建产物运行同源服务。前端按 app、features、components、domain、services 和 styles 目录组织，主题样式位于 `src/styles/theme/`，品牌资源位于 `public/brand/`，后端在 `server/`。主题与维护规范记录在 `agent.md` 与 `claude.md`。前后端通过 JSON 接口交换带版本号的工作空间，岗位更新与新增附件使用同一 SQLite 事务提交。
+Open the [development workspace](http://127.0.0.1:5173). Native screenshot OCR requires `tesseract` on PATH and the `chi_sim` and `eng` language packs. Run `npm run build` for type checking and the production web bundle. Use `npm start` to serve the built app.
+
+See the [repository instructions](agent.md) for source organization, privacy and UI change requirements. Workspace revisions detect conflicting writes. Job updates and their attachments commit in one SQLite transaction.

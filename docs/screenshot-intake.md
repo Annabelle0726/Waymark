@@ -1,19 +1,20 @@
-# 截图录入规格
-上传文件和对话框内粘贴图片进入同一识别流程。仅在本机读取图像，识别文本是候选信息，用户确定保存后才写入账号数据库。
+# Screenshot intake specification
 
-| 给定 | 当 | 则 |
+File selection and pasting inside the job dialog use the same local OCR flow. Recognition produces candidate values. Saving the reviewed job commits the source images and text to the account database.
+
+| Given | When | Expected result |
 | --- | --- | --- |
-| 带岗位、公司等可辨文字的截图 | 选择文件或粘贴剪贴板图片 | 自动识别，显示图片、原文及可编辑的候选字段；不要求重新输入已有文字 |
-| 画面只截到岗位的一部分 | 确认保存 | 可直接保存原图和已识别信息；缺失字段保持空值，在详情中显示待确认，后续可编辑 |
-| 图片模糊、没有文字或本机识别引擎不可用 | 识别结束 | 说明情况，允许换图或只保存有效原图；不推断公司、薪资、远程或投递进度 |
-| 连续粘贴或多选图片 | 确认添加 | 按列表顺序只补空字段，所有原图和识别文本在同一事务中保存 |
-| 识别中移除某张图 | 该图的结果较晚返回 | 忽略这份结果，保留其他图片 |
-| 编辑已保存的截图 | 删除首图、补图或全部截图 | 保存后移除相应原图和识别原文，取消则保留；岗位及已确认字段继续保留 |
-| 已保存半页截图 | 编辑岗位并补充另一张截图 | 空字段可自动补齐；保留已填写字段，原图与每次补图可分别回看和下载 |
-| 尚未确认或取消表单 | 识别完成 | 不创建岗位或附件 |
+| An image with legible company or position text | Select a file or paste an image | Run OCR locally. Show the image, source text and editable candidates. Retain recognized values for review. |
+| A partial image | Confirm the job | Save the original and recognized details. Leave missing fields empty and display them as unconfirmed. |
+| A blurred image, empty text or unavailable OCR engine | Recognition finishes | Explain the outcome. Allow another image or saving the valid original. Never infer company, salary, remote policy or application progress. |
+| Multiple selections or successive pastes | Confirm the batch | Fill only empty fields in list order. Save all originals and recognized text in one transaction. |
+| An image removed during recognition | Its result arrives late | Ignore that result and keep other images. |
+| Previously saved screenshots | Remove the first image, add images or remove them all | Saving removes the corresponding originals and OCR text. Canceling preserves them. Keep the job and confirmed fields. |
+| A saved partial image | Add a complementary screenshot while editing | Fill missing fields and retain existing values. Each original remains available to inspect and download. |
+| An unconfirmed or canceled form | Recognition finishes | Create no job or attachment. |
 
-首版支持 PNG、JPEG（单张最大 10 MB），每次可多选、拖入或连续粘贴，单次新增合计最大 40 MB。手动录入仍需填写公司和岗位。保留原始 OCR 文本便于回看；结构化字段允许纠错。
+Support PNG and JPEG, up to 10 MB per image and 40 MB of new images per submission. Accept multi-select, drag-and-drop and repeated paste. Manual entry requires both company and position. Preserve raw OCR text and allow corrections to structured fields.
 
-## 复验
+## Verification
 
-运行 `node --test tests/screenshot.test.mjs` 验证候选字段和补图合并。浏览器验收脚本为 `tests/screenshot_flow.py`，需 Python Playwright 和 Chromium。将 `WAYMARK_TEST_URL` 指向独立测试容器，需要指定本机浏览器时设置 `CHROME_BIN`。脚本生成虚构岗位图片，使用临时账号测试真实的文件选择、剪贴板粘贴和 OCR；另以模拟响应验证失败重试和结果乱序。
+Run `node --test tests/screenshot.test.mjs` for candidate extraction and merging. Browser acceptance uses `tests/screenshot_flow.py` with Python Playwright and Chromium. Set `WAYMARK_TEST_URL` to an isolated test container and optionally set `CHROME_BIN` to a local browser. The script uses fictional images and temporary accounts for real file selection, clipboard and OCR tests. Mocked responses exercise failure, retry and out-of-order results.

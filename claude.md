@@ -1,49 +1,5 @@
-# Waymark 项目约定
+# Waymark repository instructions
 
-## 产品与隐私
+Follow the [root project instructions](agent.md), including the requirement to write all project-owned Markdown in English.
 
-Waymark 是本机运行的个人求职工作空间。React、TypeScript、Node 与 SQLite 构成现有技术栈，通过 Docker Compose 启动。
-在现有主检出目录工作，保留用户本地改动。提交前同步远端。业务记录、附件和私有配置只保存在本机。
-密钥、数据库、上传资料、备份与日志不得进入 Git、前端资源或镜像构建上下文。
-在线生成前展示可编辑的发送摘录，并要求用户确认。缺少依据的经历标记待补充。
-未登录时显示登录注册页，注册账号从空白空间开始。验收使用显式虚构记录和独立目录。
-
-## 视觉主题
-
-采用现代山海视觉，使用平滑山峦、通透海面、冷白背景、深海蓝文字与清晰蓝色操作。
-避免纸张纹理、手账、书本装饰与金色外框。金色仅用于品牌星光和少量点缀。
-品牌标记采用用户提供的山形、蓝色飘带与金色星光图案，资源位于 public/brand/mark.svg。
-mark.svg 内嵌原始 PNG，并通过视图窗口呈现主体。替换资源时保持长宽比和透明背景。
-账号页山海插画位于 public/brand/mountain-sea.svg，使用本地矢量图形与渐变，不承载业务信息。
-桌面账号页左侧呈现品牌和山海，右侧表单参考确认的 P2，使用浅蓝玻璃面板、白色高光边缘、轻微斜向反光与柔和阴影。
-登录注册使用分段切换，选中态为白色抬起表面，状态即时生效。主按钮采用蓝色渐层与右侧箭头。
-输入框由整行容器承载边框和焦点状态，图标、文字与显隐按钮共用底色。保留自动填充，并覆盖原生 autofill 色块，禁止自动填充底色遮罩做过渡。
-登录注册在同一面板原位切换，保留邮箱，清除密码与错误，提交期间禁止重复操作。
-正常桌面与手机竖屏账号页完整展示在一个动态视口内，包含四个注册字段、错误提示和提交按钮。
-极矮窗口或软键盘压缩可用区域时，允许面板内部滚动到全部操作，滚动条不占用画面，禁止裁切内容。
-标题、品牌与正文统一使用离线可用的无衬线字体。图标保持一致的细线风格，并提供可访问名称。
-手机输入文字至少 16px，保留页面缩放，处理安全区与动态视口。不得将模拟视口检查描述为真机验收。
-
-## 源码目录
-
-- src/app/ 放置应用外壳、导航与页面组合。
-- src/features/auth/ 放置登录注册界面。
-- src/features/jobs/ 放置岗位详情及岗位表单。
-- src/features/materials/ 放置资料管理表单。
-- src/features/notes/ 放置笔记编辑与在线草稿。
-- src/components/ 放置复用表单、对话框及品牌组件。
-- src/domain/ 放置数据类型、纯业务转换与显式虚构示例。
-- src/services/ 放置前后端通信。
-- src/styles/ 放置样式入口与基础布局，theme/ 放置主题令牌、工作台与账号页样式。
-- public/brand/ 放置公开品牌资源。server/ 放置后端服务。
-
-新功能按职责归入目录。src 根目录仅保留启动入口和环境类型声明。
-业务逻辑与视觉样式分开维护。复用现有持久化、认证与权限检查。
-调整目录时同步导入、README 与 Docker 构建白名单。
-
-## 验证
-
-运行 npm run build 检查类型和构建，再通过 docker compose up -d --build --wait 验证生产入口。
-视觉调整检查桌面与手机宽度下的布局、文字对比、导航、登录注册和对话框。
-编辑器调整检查普通视图与放大视图的同一份草稿，以及保存、失败提示与刷新恢复。
-验证使用虚构记录和独立存储目录。容器重建后检查原有记录与附件仍可访问。
+Before any UI or styling change, you MUST read and follow [the UI rules](src/styles/agent.md). After the change, complete the pre-commit checklist at the end of that file.
