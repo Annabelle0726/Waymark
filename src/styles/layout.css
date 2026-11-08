@@ -162,7 +162,7 @@ button:active:not(:disabled) {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 30px 24px 27px;
+  padding: 18px 24px 16px;
 }
 .brand-area img {
   width: 43px;
@@ -184,7 +184,7 @@ button:active:not(:disabled) {
   margin-top: 5px;
 }
 .add-job {
-  margin: 0 20px 24px;
+  margin: 0 20px 16px;
   min-height: 41px;
   font-size: 14px;
   letter-spacing: 0.4px;
@@ -205,8 +205,7 @@ button:active:not(:disabled) {
   gap: 10px;
 }
 .nav-title > svg:first-child,
-.secondary-nav svg,
-.setting-link svg {
+.secondary-nav svg {
   width: 18px;
   height: 18px;
   color: #627693;
@@ -385,8 +384,7 @@ button:active:not(:disabled) {
   margin: 18px 19px 0;
   padding: 13px 0;
 }
-.secondary-nav button,
-.setting-link {
+.secondary-nav button {
   width: 100%;
   justify-content: flex-start;
   padding: 12px 7px;
@@ -396,13 +394,12 @@ button:active:not(:disabled) {
   font-weight: 580;
 }
 .secondary-nav button:hover,
-.setting-link:hover,
 .highlight {
   background: #edf3fd;
   color: #255bc2;
 }
 .side-bottom {
-  padding: 12px 20px 17px;
+  padding: 10px 20px 12px;
   background: #fcfdff;
 }
 .account {
@@ -411,8 +408,10 @@ button:active:not(:disabled) {
   text-align: left;
   width: 100%;
   border-top: 1px solid var(--line);
-  padding: 15px 2px 1px;
-  margin-top: 6px;
+  padding: 12px 6px 5px;
+  margin-top: 0;
+  border-radius: 7px;
+  min-height: 52px;
 }
 .avatar {
   flex: none;
@@ -1239,6 +1238,9 @@ button:active:not(:disabled) {
   .brand-area {
     padding-left: 18px;
   }
+  .brand-word {
+    font-size: 24px;
+  }
   .detail-grid {
     grid-template-columns: 1fr;
   }
@@ -1418,7 +1420,7 @@ button:active:not(:disabled) {
     max-width: 90vw;
   }
   .brand-area {
-    padding: 23px 19px;
+    padding: 16px 19px;
   }
 }
 @media (max-width: 390px) {

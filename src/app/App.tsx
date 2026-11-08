@@ -415,16 +415,9 @@ export default function App() {
         </div>
         <div className="side-bottom">
           <button
-            className={
-              'setting-link ' + (page === 'settings' ? 'highlight' : '')
-            }
-            onClick={() => navigate('settings')}
-          >
-            <Settings2 />
-            设置
-          </button>
-          <button
-            className="account"
+            className={'account ' + (page === 'settings' ? 'highlight' : '')}
+            aria-label="账号与设置"
+            aria-current={page === 'settings' ? 'page' : undefined}
             onClick={() => navigate('settings')}
           >
             <span className="avatar">
@@ -432,9 +425,9 @@ export default function App() {
             </span>
             <span>
               <strong>{user.name}</strong>
-              <small>个人账号</small>
+              <small>账号与设置</small>
             </span>
-            <ChevronRight size={15} />
+            <Settings2 size={17} />
           </button>
         </div>
       </aside>
