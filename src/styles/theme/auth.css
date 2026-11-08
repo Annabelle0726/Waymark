@@ -38,7 +38,7 @@
 }
 .auth-frame {
   width: 100%;
-  max-width: var(--content-width-auth);
+  max-width: var(--content-width-auth-shell);
   min-height: calc(var(--auth-height, 100dvh) - 48px);
   margin: 0 auto;
   display: flex;
@@ -93,14 +93,14 @@
   align-items: center;
   gap: var(--space-10);
   width: 100%;
-  max-width: var(--content-width-auth);
   margin-inline: auto;
   flex: 1;
-  padding: 32px 0;
+  padding: 32px max(0px, calc((100% - var(--content-width-auth)) / 2)) 32px 0;
 }
 .auth-intro {
   position: relative;
   min-width: 0;
+  max-width: calc(var(--content-width-auth) - var(--auth-card-width) - var(--space-10));
   padding-bottom: 0;
 }
 .auth-message h1 {

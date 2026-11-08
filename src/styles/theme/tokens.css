@@ -44,6 +44,7 @@
   --text-small: 0.8125rem;
   --text-body: 0.875rem;
   --text-section: 1rem;
+  --content-width-auth-shell: 75rem;
   --content-width-auth: 56.25rem;
   --auth-card-width: 26.25rem;
   --auth-landscape-height: clamp(10rem, 24dvh, 15rem);
