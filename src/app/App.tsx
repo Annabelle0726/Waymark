@@ -598,8 +598,7 @@ export default function App() {
                 </dd>
                 <dt>外部服务</dt>
                 <dd>
-                  离线提纲在本机生成。在线草稿仅在确认摘录后调用
-                  DeepSeek。岗位截图在本机识别。招聘平台尚未接入。
+                  面试准备由本人编辑并保存在本机。岗位截图在本机识别，招聘平台尚未接入。
                 </dd>
               </dl>
               <div className="settings-actions">
