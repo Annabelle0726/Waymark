@@ -8,6 +8,7 @@ COPY src/ src/
 RUN npm run build && npm prune --omit=dev --no-audit --no-fund
 
 FROM node:24.14.0-bookworm-slim AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-chi-sim && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production PORT=5173 WAYMARK_HOST=0.0.0.0 WAYMARK_DATA=/var/lib/waymark WAYMARK_CONFIG=/run/waymark-private/backend.env
 WORKDIR /app
 COPY --from=build /app/dist ./dist

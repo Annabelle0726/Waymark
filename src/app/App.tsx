@@ -365,8 +365,8 @@ export default function App() {
                             <Icon />
                           </span>
                           <span>
-                            <strong>{j.company}</strong>
-                            <small>{j.title}</small>
+                            <strong>{j.company || '公司待确认'}</strong>
+                            <small>{j.title || '岗位待确认'}</small>
                           </span>
                           {open ? <ChevronDown /> : <ChevronRight />}
                         </button>
@@ -600,7 +600,7 @@ export default function App() {
                 <dt>外部服务</dt>
                 <dd>
                   离线提纲在本机生成。在线草稿仅在确认摘录后调用
-                  DeepSeek。招聘平台与 OCR 尚未接入。
+                  DeepSeek。岗位截图在本机识别。招聘平台尚未接入。
                 </dd>
               </dl>
               <div className="settings-actions">
@@ -691,6 +691,11 @@ export default function App() {
                 下载原始截图
               </button>
             )}
+            {job.screenshots?.map((shot, i) => <section key={shot.fileId}>
+              <h3>补充截图 {i + 1} · {stamp(shot.time)}</h3>
+              <pre>{shot.original || '未识别到文字'}</pre>
+              <button className="outline" onClick={() => act(() => download(shot.fileId))}><Download/>下载补充截图 {i + 1}</button>
+            </section>)}
             <h3>用户补充</h3>
             <p>{job.supplement || '尚无补充'}</p>
             <h3>待确认事项</h3>

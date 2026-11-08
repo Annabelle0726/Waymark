@@ -1,3 +1,4 @@
+import { ScreenshotInput, type Scan } from './ScreenshotInput'
 import { useState } from 'react'
 import { Link2, ScanLine, AlignLeft, PenLine } from 'lucide-react'
 import {
@@ -6,7 +7,7 @@ import {
   fieldKeys,
   extractText,
   statuses,
-  readUpload,
+  fillMissingFromScreenshot,
   now,
   type Job,
   type Status,
@@ -28,14 +29,30 @@ export function JobForm({
   job?: Job
   onSave: (j: Job, u?: Upload) => Promise<void>
 }) {
-  const [draft, setDraft] = useState<Job>(() =>
+  const [manualDraft, setManualDraft] = useState<Job>(() =>
       job ? { ...job } : emptyJob(),
     ),
     [mode, setMode] = useState('手动填写')
   const [raw, setRaw] = useState(''),
     [url, setUrl] = useState(''),
-    [file, setFile] = useState<File>(),
     [hint, setHint] = useState('')
+  const initialScan: Scan = { text: '', pending: false, message: '' }
+  const [scan, setScan] = useState<Scan>(initialScan)
+  const [imageDraft, setImageDraft] = useState(emptyJob)
+  const [supplementing, setSupplementing] = useState(false)
+  const scanning = (!job && mode === '上传截图') || supplementing
+  const allowMissing = scanning || job?.source === '上传截图'
+  const draft = scanning ? imageDraft : manualDraft
+  const setDraft = scanning ? setImageDraft : setManualDraft
+  function updateScan(result: Scan) {
+    setScan(result)
+    setImageDraft((d) =>
+      fillMissingFromScreenshot(
+        supplementing ? manualDraft : { ...emptyJob(), id: d.id },
+        result.text,
+      ),
+    )
+  }
   function extract() {
     const values = extractText(raw)
     setDraft((d) => ({ ...d, ...values }))
@@ -45,20 +62,24 @@ export function JobForm({
   }
   return (
     <Form
-      label={job ? '保存修改' : '确认添加岗位'}
+      label={
+        job
+          ? '保存修改'
+          : scanning && scan.pending
+            ? '正在识别…'
+            : '确认添加岗位'
+      }
+      submitDisabled={scanning && (scan.pending || !scan.upload)}
       submit={async () => {
-        if (!draft.company.trim() || !draft.title.trim())
+        if (!allowMissing && (!draft.company.trim() || !draft.title.trim()))
           throw new Error('请填写公司和岗位名称')
         if (!job && mode === '岗位链接' && !/^https?:\/\//i.test(url))
           throw new Error('请输入 http 或 https 链接')
-        if (!job && mode === '上传截图' && !file)
+        if (scanning && (!scan.upload || scan.pending))
           throw new Error('请选择一张岗位截图')
         if (!job && mode === '粘贴文字' && !raw.trim())
           throw new Error('请先粘贴岗位原文')
-        const upload =
-          !job && mode === '上传截图' && file
-            ? await readUpload(file)
-            : undefined
+        const upload = scanning ? scan.upload : undefined
         const time = now(),
           source = job ? job.source : mode,
           original = job
@@ -68,7 +89,7 @@ export function JobForm({
               : mode === '岗位链接'
                 ? url
                 : mode === '上传截图'
-                  ? file!.name
+                  ? scan.text || '截图未识别到文字'
                   : fieldKeys
                       .filter((k) => draft[k])
                       .map((k) => fields[k] + '：' + draft[k])
@@ -80,14 +101,25 @@ export function JobForm({
             title: draft.title.trim(),
             source,
             original,
-            fileId: upload?.id || job?.fileId,
+            fileId: job?.fileId || upload?.id,
+            screenshots:
+              supplementing && upload
+                ? [
+                    ...(job?.screenshots || []),
+                    { fileId: upload.id, original: scan.text, time },
+                  ]
+                : job?.screenshots,
             updated: time,
             history: [
               {
                 time,
                 status: draft.status,
                 source: '手动记录',
-                text: job ? '编辑岗位信息' : '收录岗位信息',
+                text: supplementing
+                  ? '补充岗位截图'
+                  : job
+                    ? '编辑岗位信息'
+                    : '收录岗位信息',
               },
               ...draft.history,
             ],
@@ -104,6 +136,7 @@ export function JobForm({
                 key={name}
                 type="button"
                 onClick={() => {
+                  if (scanning && name !== mode) updateScan(initialScan)
                   setMode(name)
                   setHint('')
                 }}
@@ -147,72 +180,85 @@ export function JobForm({
               </small>
             </label>
           )}
-          {mode === '上传截图' && (
-            <label>
-              岗位截图
-              <input
-                required
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files?.[0])}
-              />
-              <small>
-                单张最大 10 MB。OCR 未接入，请对照截图填写下方字段。
-              </small>
-            </label>
-          )}
+          {scanning && <ScreenshotInput scan={scan} onScan={updateScan} />}
         </>
       )}
-      <div className="field-grid">
-        {fieldKeys.map((k) => (
-          <label key={k} className={k === 'description' ? 'span2' : ''}>
-            {fields[k]}
-            {(k === 'company' || k === 'title') && (
-              <span className="required"> *</span>
-            )}
-            {k === 'description' ? (
-              <textarea
-                rows={3}
-                value={draft[k]}
-                onChange={(e) => setDraft({ ...draft, [k]: e.target.value })}
-                placeholder="待确认"
-              />
-            ) : (
-              <input
-                required={k === 'company' || k === 'title'}
-                value={draft[k]}
-                onChange={(e) => setDraft({ ...draft, [k]: e.target.value })}
-                placeholder={
-                  ['skills', 'bonus'].includes(k) ? '多项用逗号分隔' : '待确认'
-                }
-              />
-            )}
-          </label>
-        ))}
-        <label>
-          投递状态
-          <select
-            aria-label="投递状态"
-            value={draft.status}
-            onChange={(e) =>
-              setDraft({ ...draft, status: e.target.value as Status })
-            }
+      {job?.source === '上传截图' && (
+        <div>
+          <button
+            type="button"
+            className="outline small"
+            onClick={() => {
+              setScan(initialScan)
+              setSupplementing(!supplementing)
+            }}
           >
-            {statuses.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-        <label className="span2">
-          用户补充
-          <textarea
-            rows={2}
-            value={draft.supplement}
-            onChange={(e) => setDraft({ ...draft, supplement: e.target.value })}
-            placeholder="补充个人观察或沟通内容"
-          />
-        </label>
-      </div>
+            {supplementing ? '取消补图' : '补充另一张截图'}
+          </button>
+          {supplementing && (
+            <>
+              <p>只补充缺失字段，已填写的内容和原图会保留。</p>
+              <ScreenshotInput scan={scan} onScan={updateScan} />
+            </>
+          )}
+        </div>
+      )}
+      {(!scanning || (scan.upload && !scan.pending)) && (
+        <div className="field-grid">
+          {fieldKeys.map((k) => (
+            <label key={k} className={k === 'description' ? 'span2' : ''}>
+              {fields[k]}
+              {!allowMissing && (k === 'company' || k === 'title') && (
+                <span className="required"> *</span>
+              )}
+              {k === 'description' ? (
+                <textarea
+                  rows={3}
+                  value={draft[k]}
+                  onChange={(e) => setDraft({ ...draft, [k]: e.target.value })}
+                  placeholder="待确认"
+                />
+              ) : (
+                <input
+                  required={!allowMissing && (k === 'company' || k === 'title')}
+                  value={draft[k]}
+                  onChange={(e) => setDraft({ ...draft, [k]: e.target.value })}
+                  placeholder={
+                    ['skills', 'bonus'].includes(k)
+                      ? '多项用逗号分隔'
+                      : '待确认'
+                  }
+                />
+              )}
+            </label>
+          ))}
+          <label>
+            投递状态
+            <select
+              aria-label="投递状态"
+              value={draft.status}
+              onChange={(e) =>
+                setDraft({ ...draft, status: e.target.value as Status })
+              }
+            >
+              {statuses.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+          <label className="span2">
+            用户补充
+            <textarea
+              rows={2}
+              value={draft.supplement}
+              onChange={(e) =>
+                setDraft({ ...draft, supplement: e.target.value })
+              }
+              placeholder="补充个人观察或沟通内容"
+            />
+          </label>
+        </div>
+      )}
     </Form>
   )
 }

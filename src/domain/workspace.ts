@@ -30,6 +30,7 @@ export type Job = {
   source: string
   original: string
   fileId?: string
+  screenshots?: { fileId: string; original: string; time: string }[]
   updated: string
   history: Update[]
 }
@@ -147,4 +148,76 @@ export async function readUpload(file: File): Promise<Upload> {
     reader.readAsDataURL(file)
   })
   return { id: uid(), name: file.name, data }
+}
+
+export function extractScreenshot(
+  raw: string,
+): Partial<Record<JobField, string>> {
+  const normalized = raw.replace(
+    /(?<=[\p{Script=Han}])[ \t]+(?=[\p{Script=Han}])/gu,
+    '',
+  )
+  const lines = normalized
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const values: Partial<Record<JobField, string>> = {}
+  const headers = new Map(
+    fieldKeys.flatMap((key) =>
+      aliases[key].split('|').map((label) => [label, key] as const),
+    ),
+  )
+  let section: JobField | undefined
+  for (const line of lines) {
+    const [label, ...rest] = line.split(/[：:]/)
+    const key = headers.get(label.trim())
+    if (key) {
+      const inline = rest.join('：').trim()
+      section = key
+      if (!inline) continue
+      values[key] = inline
+    } else if (section) {
+      if (/^[^：:]{1,12}[：:]/.test(line)) {
+        section = undefined
+        continue
+      }
+      values[section] = [values[section], line].filter(Boolean).join('\n')
+    }
+    if (
+      section !== 'description' &&
+      section !== 'skills' &&
+      section !== 'bonus'
+    )
+      section = undefined
+  }
+  const salary =
+    /\b\d+(?:\.\d+)?\s*[-–~至]\s*\d+(?:\.\d+)?\s*[kK万](?:\s*[·×x]\s*\d+薪)?/u
+  for (const line of lines) {
+    const pay = line.match(salary)?.[0]
+    const heading = (pay ? line.replace(pay, '') : line).trim()
+    const isTitle =
+      /^[\p{Script=Han}A-Za-z0-9 /+#.-]{2,28}(?:工程师|设计师|经理|开发岗|专员|实习生|架构师)$/u.test(
+        heading,
+      )
+    if (!values.title && isTitle) values.title = heading
+    if (!values.salary && pay && (line === pay || isTitle)) values.salary = pay
+    if (
+      !values.company &&
+      /^[\p{Script=Han}A-Za-z0-9（）()·]{2,45}(?:有限公司|有限责任公司)$/u.test(
+        line,
+      )
+    )
+      values.company = line
+  }
+  return values
+}
+
+export function fillMissingFromScreenshot(base: Job, text: string): Job {
+  const result = { ...base }
+  const candidates = extractScreenshot(text)
+  for (const field of fieldKeys) {
+    if (!result[field].trim() && candidates[field])
+      result[field] = candidates[field]
+  }
+  return result
 }

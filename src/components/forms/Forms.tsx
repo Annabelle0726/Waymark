@@ -34,6 +34,7 @@ export function Dialog({
       ref={ref}
       className={'dialog ' + (wide ? 'wide' : '')}
       aria-label={title}
+      onPaste={(event) => { if (event.clipboardData.files.length) dirty.current = true }}
       onChange={() => {
         dirty.current = true
       }}
@@ -56,16 +57,18 @@ export function Form({
   children,
   submit,
   label,
+  submitDisabled = false,
 }: {
   children: ReactNode
   submit: () => Promise<void>
   label: string
+  submitDisabled?: boolean
 }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
   async function handle(e: FormEvent) {
     e.preventDefault()
-    if (busy) return
+    if (busy || submitDisabled) return
     setBusy(true)
     setError('')
     try {
@@ -87,7 +90,7 @@ export function Form({
           </p>
         )}
         <div className="form-foot">
-          <button className="primary" type="submit">
+          <button className="primary" type="submit" disabled={submitDisabled || busy}>
             {busy ? '正在处理…' : label}
             <ArrowRight size={16} />
           </button>

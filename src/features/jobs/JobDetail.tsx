@@ -58,11 +58,11 @@ export default function JobDetail({
               <BriefcaseBusiness size={14} />
               岗位档案
             </div>
-            <h1>{job.title}</h1>
+            <h1>{job.title || '岗位待确认'}</h1>
             <div className="cover-meta">
               <span>
                 <Building2 />
-                {job.company}
+                {job.company || '公司待确认'}
               </span>
               <i />
               <span>

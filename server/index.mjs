@@ -1,3 +1,4 @@
+import { recognizeScreenshot } from './screenshot.mjs'
 import { mountAssistant } from './assistant.mjs'
 import express from 'express'
 import { DatabaseSync } from 'node:sqlite'
@@ -146,6 +147,7 @@ app.use('/api', (req, res, next) =>
     : res.status(401).json({ error: '请登录后访问私人空间' }),
 )
 mountAssistant(app)
+app.post('/api/screenshot/recognize', recognizeScreenshot)
 app.post('/api/logout', (req, res) => {
   sql('DELETE FROM sessions WHERE token=?').run(req.tokenHash)
   res.clearCookie('waymark_session', cookieOptions).json({ ok: true })
@@ -204,9 +206,13 @@ function validState(s) {
           'original',
           'updated',
         ].every((k) => textField(j[k])) &&
-        Boolean(j.company.trim() && j.title.trim()) &&
+        (Boolean(j.company.trim() && j.title.trim()) ||
+          (j.source === '上传截图' && idOk(j.fileId))) &&
         statuses.includes(j.status) &&
         (!j.fileId || idOk(j.fileId)) &&
+        (j.screenshots === undefined ||
+          (Array.isArray(j.screenshots) && j.screenshots.every(s =>
+            s && idOk(s.fileId) && textField(s.original) && textField(s.time)))) &&
         Array.isArray(j.history) &&
         j.history.every(
           (h) =>
@@ -229,6 +235,7 @@ app.put('/api/workspace', (req, res) => {
   const owner = req.account.id
   const ids = new Set([
     ...state.jobs.map((j) => j.fileId).filter(Boolean),
+    ...state.jobs.flatMap(j => (j.screenshots || []).map(s => s.fileId)),
     ...state.materials.map((m) => m.fileId),
   ])
   db.exec('BEGIN IMMEDIATE')
