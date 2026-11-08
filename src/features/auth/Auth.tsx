@@ -12,6 +12,7 @@ import {
 import { type User } from '../../domain/workspace'
 import { api } from '../../services/api'
 import { Form } from '../../components/forms/Forms'
+import { AuthBackdrop } from './AuthBackdrop'
 
 export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
   const page = useRef<HTMLElement>(null)
@@ -77,6 +78,13 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
 
   return (
     <main ref={page} className="auth-page">
+      <AuthBackdrop />
+      <img
+        className="auth-landscape"
+        src="/brand/mountain-sea.svg"
+        alt=""
+        aria-hidden="true"
+      />
       <div className="auth-frame">
         <header className="auth-header">
           <a className="auth-brand" href="/" aria-label="Waymark 首页">
@@ -92,10 +100,10 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
           <section className="auth-intro" aria-label="Waymark 求职工作空间">
             <div className="auth-message">
               <h1>
-                <span>整理机会，</span>
-                <span>准备下一步</span>
+                <span>求职进展，</span>
+                <span>一目了然。</span>
               </h1>
-              <p>岗位、资料与面试准备，集中管理。</p>
+              <p>收拢岗位信息，跟进每一次投递。</p>
             </div>
             <ul className="auth-features">
               <li>
@@ -111,12 +119,6 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                 面试准备
               </li>
             </ul>
-            <img
-              className="auth-landscape"
-              src="/brand/mountain-sea.svg"
-              alt=""
-              aria-hidden="true"
-            />
           </section>
           <section
             ref={card}
