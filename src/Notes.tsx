@@ -49,14 +49,12 @@ export default function Notes({
   materials,
   onSave,
   onDirty,
-  demo,
 }: {
   job?: Job
   value: string
   materials: Material[]
   onSave: (v: string) => Promise<void>
   onDirty: (dirty: boolean) => void
-  demo: boolean
 }) {
   const [draft, setDraft] = useState(value),
     [full, setFull] = useState(false),
@@ -221,11 +219,9 @@ export default function Notes({
             <Sparkles />
             离线提纲
           </button>
-          {!demo && (
-            <button className="draft-btn" onClick={() => setOnline(true)}>
-              在线草稿
-            </button>
-          )}
+          <button className="draft-btn" onClick={() => setOnline(true)}>
+            在线草稿
+          </button>
         </div>
       </div>
       {preview ? (
@@ -253,9 +249,7 @@ export default function Notes({
             ? '正在保存'
             : dirty
               ? '有未保存的修改'
-              : demo
-                ? '示例空间 · 本次预览'
-                : '已保存到本机'}
+              : '已保存到本机'}
         </span>
         <span>{draft.length} 字</span>
       </footer>

@@ -11,7 +11,6 @@ import {
   ScanLine,
   AlignLeft,
   PenLine,
-  FileText,
   ArrowRight,
   AlertCircle,
   Eye,
@@ -459,10 +458,8 @@ export function MaterialForm({
 }
 export function Auth({
   onUser,
-  onBack,
 }: {
   onUser: (u: User) => Promise<void>
-  onBack: () => void
 }) {
   const [register, setRegister] = useState(false),
     [visible, setVisible] = useState(false)
@@ -561,10 +558,6 @@ export function Auth({
             }}
           >
             {register ? '已有账号？登录' : '还没有账号？注册'}
-          </button>
-          <button onClick={onBack}>
-            <FileText size={14} />
-            浏览虚构示例
           </button>
         </div>
       </section>

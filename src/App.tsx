@@ -19,7 +19,6 @@ import {
   Pencil,
   CirclePlus,
   ShieldCheck,
-  LogIn,
   LogOut,
   FileText,
   UploadCloud,
@@ -31,7 +30,6 @@ import {
 } from 'lucide-react'
 import { api } from './api'
 import {
-  demoWorkspace,
   fields,
   fieldKeys,
   now,
@@ -70,8 +68,7 @@ export default function App() {
     [user, setUser] = useState<User | null>(null),
     [ready, setReady] = useState(false),
     [loadError, setLoadError] = useState('')
-  const [auth, setAuth] = useState(false),
-    [page, setPage] = useState<Page>('jobs'),
+  const [page, setPage] = useState<Page>('jobs'),
     [selected, setSelected] = useState(''),
     [expanded, setExpanded] = useState(''),
     [jobsOpen, setJobsOpen] = useState(true)
@@ -85,8 +82,7 @@ export default function App() {
     [password, setPassword] = useState(''),
     [instance, setInstance] = useState(0)
   const revision = useRef(0),
-    lock = useRef(false),
-    guestFiles = useRef(new Map<string, Upload>())
+    lock = useRef(false)
   const job = state.jobs.find((j) => j.id === selected)
   function reset(data: Workspace, u: User | null, rev: number) {
     setState(data)
@@ -101,12 +97,14 @@ export default function App() {
     setQuery('')
     setJobsOpen(true)
     setInstance((n) => n + 1)
-    guestFiles.current.clear()
+    setMaterial(undefined)
+    setName('')
+    setPassword('')
+    setToast('')
   }
   async function loadWorkspace(u: User) {
     const data = await api<{ state: Workspace; revision: number }>('workspace')
     reset(data.state, u, data.revision)
-    setAuth(false)
   }
   async function boot() {
     setReady(false)
@@ -114,7 +112,7 @@ export default function App() {
     try {
       const s = await api<{ user: User | null }>('session')
       if (s.user) await loadWorkspace(s.user)
-      else reset(demoWorkspace(), null, 0)
+      else reset(empty, null, 0)
       setReady(true)
     } catch (e) {
       setLoadError((e as Error).message)
@@ -166,22 +164,12 @@ export default function App() {
     if (lock.current) throw new Error('正在保存，请稍后再试')
     lock.current = true
     try {
-      if (user) {
-        const r = await api<{ revision: number }>('workspace', 'PUT', {
-          state: next,
-          revision: revision.current,
-          upload,
-        })
-        revision.current = r.revision
-      } else if (upload) guestFiles.current.set(upload.id, upload)
-      if (!user) {
-        const used = new Set([
-          ...next.jobs.map((j) => j.fileId),
-          ...next.materials.map((m) => m.fileId),
-        ])
-        for (const key of guestFiles.current.keys())
-          if (!used.has(key)) guestFiles.current.delete(key)
-      }
+      const r = await api<{ revision: number }>('workspace', 'PUT', {
+        state: next,
+        revision: revision.current,
+        upload,
+      })
+      revision.current = r.revision
       setState(next)
     } finally {
       lock.current = false
@@ -213,36 +201,21 @@ export default function App() {
       setToast((e as Error).message)
     }
   }
-  function startAuth() {
-    if (!leave()) return
-    setDrawer(false)
-    setAuth(true)
-  }
   async function logout() {
     if (!leave()) return
     await api('logout', 'POST', {})
-    reset(demoWorkspace(), null, 0)
-    setAuth(true)
+    reset(empty, null, 0)
+
   }
   async function download(id: string) {
-    let blob: Blob, fileName: string
-    if (user) {
-      const res = await fetch('/api/files/' + id)
-      if (!res.ok) throw new Error('文件读取失败，请重新登录后重试')
-      blob = await res.blob()
-      const cd = res.headers.get('content-disposition') || ''
-      const encoded = cd.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
-      fileName = encoded
-        ? decodeURIComponent(encoded)
-        : cd.match(/filename="([^"]+)"/)?.[1] || '附件'
-    } else {
-      const file = guestFiles.current.get(id)
-      if (!file) throw new Error('文件不存在')
-      blob = new Blob([
-        Uint8Array.from(atob(file.data), (c) => c.charCodeAt(0)),
-      ])
-      fileName = file.name
-    }
+    const res = await fetch('/api/files/' + id)
+    if (!res.ok) throw new Error('文件读取失败，请重新登录后重试')
+    const blob = await res.blob()
+    const cd = res.headers.get('content-disposition') || ''
+    const encoded = cd.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
+    const fileName = encoded
+      ? decodeURIComponent(encoded)
+      : cd.match(/filename="([^"]+)"/)?.[1] || '附件'
     const url = URL.createObjectURL(blob),
       a = document.createElement('a')
     a.href = url
@@ -267,7 +240,7 @@ export default function App() {
     return (
       <main className="center-state">
         <img src="/mark.svg" width="48" alt="Waymark" />
-        <h2>{loadError ? '工作空间加载失败' : '正在打开工作空间…'}</h2>
+        <h2>{loadError ? '工作空间加载失败' : '正在检查登录状态…'}</h2>
         {loadError && (
           <>
             <p>{loadError}</p>
@@ -278,7 +251,7 @@ export default function App() {
         )}
       </main>
     )
-  if (auth) return <Auth onUser={loadWorkspace} onBack={() => setAuth(false)} />
+  if (!user) return <Auth onUser={loadWorkspace} />
   const title =
     page === 'jobs' ? (job ? '岗位详情' : '我的岗位') : pageNames[page]
   const list = state.jobs.filter((j) =>
@@ -295,7 +268,6 @@ export default function App() {
       job={j}
       value={j ? j.note : state.general}
       materials={state.materials}
-      demo={!user}
       onDirty={setDirty}
       onSave={async (note) => {
         await save(
@@ -448,14 +420,14 @@ export default function App() {
           </button>
           <button
             className="account"
-            onClick={() => (user ? navigate('settings') : startAuth())}
+            onClick={() => navigate('settings')}
           >
             <span className="avatar">
-              {user ? user.name.slice(0, 1) : <CircleUserRound />}
+              {user.name.slice(0, 1)}
             </span>
             <span>
-              <strong>{user?.name || '示例访客'}</strong>
-              <small>{user ? '个人账号' : '登录 / 注册'}</small>
+              <strong>{user.name}</strong>
+              <small>个人账号</small>
             </span>
             <ChevronRight size={15} />
           </button>
@@ -478,7 +450,7 @@ export default function App() {
           </div>
           <div className="environment">
             <i />
-            {user ? '本机私人空间' : '虚构示例空间'}
+            本机私人空间
           </div>
         </header>
         <main className="main-content">
@@ -615,14 +587,12 @@ export default function App() {
               </header>
               <dl>
                 <dt>昵称</dt>
-                <dd>{user?.name || '示例访客'}</dd>
+                <dd>{user.name}</dd>
                 <dt>邮箱</dt>
-                <dd>{user?.email || '尚未登录'}</dd>
+                <dd>{user.email}</dd>
                 <dt>数据保存</dt>
                 <dd>
-                  {user
-                    ? '岗位、笔记和上传文件按账号保存在本机服务的 SQLite 数据库中。'
-                    : '当前为临时示例空间，刷新会重置。注册后可保存私人资料。'}
+                  岗位、笔记和上传文件按账号保存在本机服务的 SQLite 数据库中。
                 </dd>
                 <dt>外部服务</dt>
                 <dd>
@@ -631,46 +601,35 @@ export default function App() {
                 </dd>
               </dl>
               <div className="settings-actions">
-                {user ? (
-                  <>
-                    <button
-                      className="outline"
-                      onClick={() => {
-                        setName(user.name)
-                        setModal('profile')
-                      }}
-                    >
-                      <Pencil />
-                      编辑昵称
-                    </button>
-                    <button className="outline" onClick={() => act(logout)}>
-                      <LogOut />
-                      退出登录
-                    </button>
-                    <button
-                      className="danger-text"
-                      onClick={() => {
-                        setPassword('')
-                        setModal('deleteAccount')
-                      }}
-                    >
-                      删除账号与数据
-                    </button>
-                  </>
-                ) : (
-                  <button className="primary" onClick={startAuth}>
-                    <LogIn />
-                    登录 / 注册
-                  </button>
-                )}
+                <button
+                  className="outline"
+                  onClick={() => {
+                    setName(user.name)
+                    setModal('profile')
+                  }}
+                >
+                  <Pencil />
+                  编辑昵称
+                </button>
+                <button className="outline" onClick={() => act(logout)}>
+                  <LogOut />
+                  退出登录
+                </button>
+                <button
+                  className="danger-text"
+                  onClick={() => {
+                    setPassword('')
+                    setModal('deleteAccount')
+                  }}
+                >
+                  删除账号与数据
+                </button>
               </div>
             </section>
           )}
           <footer className="workspace-foot">
             <ShieldCheck size={14} />
-            {user
-              ? '个人资料仅保存在本机服务'
-              : '虚构示例仅供体验，登录后可保存私人资料'}
+            个人资料仅保存在本机服务
           </footer>
         </main>
       </div>
@@ -809,9 +768,9 @@ export default function App() {
             label="永久删除账号"
             submit={async () => {
               await api('account', 'DELETE', { password })
-              reset(demoWorkspace(), null, 0)
+              reset(empty, null, 0)
               setPassword('')
-              setAuth(true)
+
             }}
           >
             <p>此操作将永久删除岗位、笔记和上传文件。请输入密码确认。</p>
