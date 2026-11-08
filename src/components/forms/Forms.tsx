@@ -95,7 +95,7 @@ export function Form({
       <fieldset disabled={busy} className="form-body">
         {children}
         {error && (
-          <p role="alert" className="error">
+          <p role="alert" aria-live="polite" aria-atomic="true" className="error">
             <AlertCircle size={16} />
             {error}
           </p>
