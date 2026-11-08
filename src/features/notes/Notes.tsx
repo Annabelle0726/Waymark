@@ -415,6 +415,7 @@ export default function Notes({
         }
       }}
     >
+      {job && !focus && <h3 className="document-job-title">岗位专属面试准备</h3>}
       <div className="document-toolbar">
         {focus && (
           <button className="document-done" onClick={() => setFocus(null)}>
@@ -596,7 +597,6 @@ export default function Notes({
       ) : null}
       {
         <div className="document-body" hidden={Boolean(focus)}>
-          {job && <h3 className="document-job-title">岗位专属面试准备</h3>}
           {draft.sections.map((s, index) => (
             <div key={s.id}>
               {index > 0 && !preview && (

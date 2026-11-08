@@ -10,6 +10,7 @@
   color: var(--ink);
 }
 .preparation-main > .document-editor:not(.document-focused),
+.jobs-main > .document-editor:not(.document-focused),
 .preparation-main > .page-heading,
 .preparation-main > .page-intro {
   margin-inline-start: 0;
@@ -379,8 +380,15 @@
 .document-done {
   gap: var(--space-1);
 }
-.document-job-title {
-  padding-top: var(--space-4);
+.document-editor > .document-job-title {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--space-10) - var(--space-1));
+  margin-bottom: var(--space-4);
+  font-weight: 600;
+}
+.jobs-main:has(.document-editor) > .workspace-foot {
+  display: none;
 }
 @media (max-width: 640px) {
   .document-toolbar {
