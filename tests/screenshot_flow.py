@@ -80,7 +80,6 @@ with sync_playwright() as driver:
         expect(page.get_by_role("dialog")).to_have_count(0)
         assert api.get(base+"/api/workspace").json()["state"]["jobs"][0]["company"]=="后来确认的虚构公司"
         button("编辑岗位").click()
-        button("补充另一张截图").click()
         extra = paste(screenshot(["公司：另一家公司", "岗位：前端开发工程师"]))
         expect(page.get_by_label("岗位名称")).to_have_value("前端开发工程师",timeout=40000)
         expect(page.get_by_label("公司名称")).to_have_value("后来确认的虚构公司")
@@ -117,13 +116,70 @@ with sync_playwright() as driver:
             page.locator('dialog input[type=file]').set_input_files({"name":"first.jpg","mimeType":"image/jpeg","buffer":full})
         expect(button("正在识别…")).to_be_disabled()
         paste(cropped)
+        button("删除截图 1").click()
         expect(page.get_by_label("岗位名称")).to_have_value("第二张图")
         with page.expect_response("**/api/screenshot/recognize"):
             held[0].fulfill(json={"text":"岗位：迟到的第一张图"})
         save()
         newest = api.get(base+"/api/workspace").json()["state"]["jobs"][0]
         assert newest["title"]=="第二张图" and newest["original"]=="岗位：第二张图"
-        print("PASS real upload and paste OCR, partial/blank, append without overwriting, original bytes, retry, cancel and out-of-order responses")
+        page.unroute("**/api/screenshot/recognize")
+        before=api.get(base+"/api/workspace").json()
+        broken=before["state"]
+        staged_id=uuid.uuid4().hex
+        broken["jobs"][0]["screenshots"]=[{"fileId":staged_id,"time":"2026-11-08","original":""}]
+        response=api.put(base+"/api/workspace",data={
+            "revision":before["revision"],"state":broken,"uploads":[
+                {"id":staged_id,"name":"saved-first.png","data":base64.b64encode(blank).decode()},
+                {"id":uuid.uuid4().hex,"name":"unreferenced.png","data":"AA=="}
+            ]})
+        assert response.status==400 and api.get(base+"/api/files/"+staged_id).status==404
+        assert api.get(base+"/api/workspace").json()["revision"]==before["revision"]
+        start()
+        page.locator('dialog input[type=file]').set_input_files([
+            {"name":"完整职位.jpg","mimeType":"image/jpeg","buffer":full},
+            {"name":"岗位要求.png","mimeType":"image/png","buffer":cropped}
+        ])
+        expect(page.locator(".shot-list li")).to_have_count(2)
+        expect(button("确认添加岗位")).to_be_enabled(timeout=60000)
+        button("放大截图 1").click()
+        large=page.get_by_role("dialog",name="完整职位.jpg")
+        expect(large.locator("img")).to_be_visible()
+        large.get_by_role("button",name="关闭").click()
+        expect(page.get_by_role("dialog",name="添加岗位")).to_be_visible()
+        if os.getenv("WAYMARK_UI_EVIDENCE"):
+            for width,height in [(1440,900),(390,844)]:
+                page.set_viewport_size({"width":width,"height":height})
+                page.get_by_role("dialog",name="添加岗位").evaluate("(el) => el.scrollTop=0")
+                page.screenshot(path=os.path.join(os.environ["WAYMARK_UI_EVIDENCE"],f"job-form-{width}.png"))
+                assert page.locator(".job-form").evaluate("(el)=>el.scrollWidth<=el.clientWidth+1")
+            page.set_viewport_size({"width":1440,"height":900})
+        save()
+        item=api.get(base+"/api/workspace").json()["state"]["jobs"][0]
+        primary,secondary=item["fileId"],item["screenshots"][0]["fileId"]
+        assert api.get(base+"/api/files/"+primary).body()==full
+        assert api.get(base+"/api/files/"+secondary).body()==cropped
+        button("编辑岗位").click()
+        button("删除截图 1").click()
+        page.once("dialog",lambda dialog: dialog.accept())
+        button("关闭").click()
+        assert api.get(base+"/api/files/"+primary).ok
+        button("编辑岗位").click()
+        button("删除截图 1").click()
+        button("保存修改").click()
+        expect(page.get_by_role("dialog")).to_have_count(0)
+        assert api.get(base+"/api/files/"+primary).status==404
+        assert api.get(base+"/api/files/"+secondary).body()==cropped
+        button("编辑岗位").click()
+        button("删除截图 1").click()
+        button("保存修改").click()
+        expect(page.get_by_role("dialog")).to_have_count(0)
+        page.reload()
+        expect(page.locator("h1")).to_have_text(item["title"])
+        assert api.get(base+"/api/files/"+secondary).status==404
+        final=api.get(base+"/api/workspace").json()["state"]["jobs"][0]
+        assert not final.get("fileId") and not final["original"] and not final["screenshots"]
+        print("PASS multi-image OCR, paste, previews, deletion/cancel, refresh, originals, stale results and atomic rollback")
     finally:
         api.delete(base+"/api/account",data={"password":password})
         browser.close()

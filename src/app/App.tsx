@@ -170,7 +170,7 @@ export default function App() {
       const r = await api<{ revision: number }>('workspace', 'PUT', {
         state: next,
         revision: revision.current,
-        upload,
+        ...(Array.isArray(upload) ? { uploads: upload } : { upload }),
       })
       revision.current = r.revision
       setState(next)
@@ -178,7 +178,7 @@ export default function App() {
       lock.current = false
     }
   }
-  async function storeJob(j: Job, u?: Upload) {
+  async function storeJob(j: Job, u?: Upload | Upload[]) {
     const exists = state.jobs.some((x) => x.id === j.id)
     await save(
       {

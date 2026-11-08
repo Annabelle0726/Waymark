@@ -44,3 +44,12 @@ test('第二张图只补空字段，冲突的职位名不能覆盖已确认内�
   assert.equal(result.title, existing.title)
   assert.equal(existing.company, '')
 })
+
+test('旧记录的原图和补图按顺序进入同一列表，可删除首图或全部清空', () => {
+  const job = { ...domain.emptyJob(), source:'上传截图', fileId:'a', original:'原图文本', screenshots:[{fileId:'b', original:'补图文本',time:'2026-11-08'}] }
+  const rows = domain.savedScreenshots(job)
+  assert.deepEqual(rows.map(s => s.fileId),['a','b'])
+  assert.equal(domain.screenshotSource(rows.slice(1)).fileId, 'b')
+  assert.equal(domain.screenshotSource(rows.slice(1)).original, '补图文本')
+  assert.equal(domain.screenshotSource([]).original, '')
+})

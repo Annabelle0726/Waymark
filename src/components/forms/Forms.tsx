@@ -34,18 +34,21 @@ export function Dialog({
       ref={ref}
       className={'dialog ' + (wide ? 'wide' : '')}
       aria-label={title}
+      onClick={e => { if ((e.target as HTMLElement).closest('[data-dirties]')) dirty.current = true }}
+      onDrop={() => { dirty.current = true }}
       onPaste={(event) => { if (event.clipboardData.files.length) dirty.current = true }}
       onChange={() => {
         dirty.current = true
       }}
       onCancel={(e) => {
         e.preventDefault()
+        e.stopPropagation()
         close()
       }}
     >
       <div className="dialog-head">
         <h2>{title}</h2>
-        <button className="icon-btn" onClick={close} aria-label="关闭">
+        <button type="button" className="icon-btn" onClick={close} aria-label="关闭">
           <X size={19} />
         </button>
       </div>
@@ -58,11 +61,13 @@ export function Form({
   submit,
   label,
   submitDisabled = false,
+  className,
 }: {
   children: ReactNode
   submit: () => Promise<void>
   label: string
   submitDisabled?: boolean
+  className?: string
 }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('')
@@ -80,7 +85,7 @@ export function Form({
     }
   }
   return (
-    <form onSubmit={handle} aria-busy={busy}>
+    <form onSubmit={handle} aria-busy={busy} className={className}>
       <fieldset disabled={busy} className="form-body">
         {children}
         {error && (

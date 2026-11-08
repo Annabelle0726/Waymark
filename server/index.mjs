@@ -86,7 +86,10 @@ app.use(
     }
     next()
   },
-  express.json({ limit: '18mb' }),
+  (req, res, next) => {
+    const batch = req.account && req.method === 'PUT' && req.path === '/workspace'
+    return express.json({ limit: batch ? '64mb' : '18mb' })(req, res, next)
+  },
 )
 app.get('/api/session', (req, res) =>
   res.json({ user: req.account ? publicUser(req.account) : null }),
@@ -207,7 +210,7 @@ function validState(s) {
           'updated',
         ].every((k) => textField(j[k])) &&
         (Boolean(j.company.trim() && j.title.trim()) ||
-          (j.source === '上传截图' && idOk(j.fileId))) &&
+          j.source === '上传截图') &&
         statuses.includes(j.status) &&
         (!j.fileId || idOk(j.fileId)) &&
         (j.screenshots === undefined ||
@@ -230,6 +233,9 @@ function validState(s) {
 }
 app.put('/api/workspace', (req, res) => {
   const { state, revision, upload } = req.body
+  const uploads = req.body.uploads ?? (upload ? [upload] : [])
+  if (!Array.isArray(uploads) || uploads.some(u => !u || typeof u.data !== 'string'))
+    fail(400, '附件格式无效')
   if (!validState(state) || JSON.stringify(state).length > 4000000)
     fail(400, '内容超出限制或格式不完整')
   const owner = req.account.id
@@ -245,7 +251,8 @@ app.put('/api/workspace', (req, res) => {
     ).run(JSON.stringify(state), owner, revision)
     if (!result.changes)
       fail(409, '另一页面已修改工作空间。请复制未保存内容，刷新后重试')
-    if (upload) {
+    let totalBytes = 0
+    for (const upload of uploads) {
       if (
         !idOk(upload.id) ||
         !ids.has(upload.id) ||
@@ -255,6 +262,8 @@ app.put('/api/workspace', (req, res) => {
         fail(400, '附件无效')
       const bytes = Buffer.from(upload.data, 'base64')
       if (bytes.length > 10 * 1024 * 1024) fail(413, '单个文件最大 10 MB')
+      totalBytes += bytes.length
+      if (totalBytes > 40 * 1024 * 1024) fail(413, '一次保存的附件合计最大 40 MB')
       sql('INSERT INTO files VALUES(?,?,?,?)').run(
         upload.id,
         owner,
@@ -282,6 +291,13 @@ app.get('/api/files/:id', (req, res) => {
     req.params.id,
   )
   if (!file) fail(404, '文件不存在')
+  if (req.query.preview === '1') {
+    const bytes = Buffer.from(file.bytes)
+    const png = bytes.subarray(0,8).equals(Buffer.from('89504e470d0a1a0a','hex'))
+    const jpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
+    if (!png && !jpeg) fail(415, '此文件无法预览')
+    return res.type(png ? 'image/png' : 'image/jpeg').send(bytes)
+  }
   res
     .attachment(file.name)
     .type('application/octet-stream')

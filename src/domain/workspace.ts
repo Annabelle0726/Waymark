@@ -30,7 +30,8 @@ export type Job = {
   source: string
   original: string
   fileId?: string
-  screenshots?: { fileId: string; original: string; time: string }[]
+  screenshotName?: string
+  screenshots?: Screenshot[]
   updated: string
   history: Update[]
 }
@@ -45,7 +46,16 @@ export type Material = {
 export type Workspace = { jobs: Job[]; general: string; materials: Material[] }
 export type User = { id: string; name: string; email: string }
 export type Upload = { id: string; name: string; data: string }
-export type Save = (state: Workspace, upload?: Upload) => Promise<void>
+export type Save = (state: Workspace, upload?: Upload | Upload[]) => Promise<void>
+export type Screenshot = { fileId: string; original: string; time: string; name?: string }
+export function savedScreenshots(job: Job): Screenshot[] {
+  const primary = job.fileId ? [{ fileId: job.fileId, original: job.original, time: job.updated, name: job.screenshotName }] : []
+  return [...primary, ...(job.screenshots || [])]
+}
+export function screenshotSource(rows: Screenshot[]) {
+  const [first, ...screenshots] = rows
+  return { fileId: first?.fileId, screenshotName: first?.name, original: first?.original || '', screenshots }
+}
 export const uid = () => crypto.randomUUID()
 export const now = () => new Date().toISOString()
 export const stamp = (value: string, full = false) =>
