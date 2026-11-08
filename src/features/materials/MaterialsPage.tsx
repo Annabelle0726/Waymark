@@ -17,7 +17,7 @@ import {
   UploadCloud,
   X,
 } from 'lucide-react'
-import type { Material, Upload } from '../../domain/workspace'
+import { stamp, type Material, type Upload } from '../../domain/workspace'
 import { Dialog } from '../../components/forms/Forms'
 import { MaterialForm } from './MaterialForm'
 
@@ -112,6 +112,7 @@ function ActionMenu({
   onPreview,
   onDownload,
   onEdit,
+  onSummary,
   onDelete,
 }: {
   menu: Menu
@@ -119,6 +120,7 @@ function ActionMenu({
   onPreview: () => void
   onDownload: () => void
   onEdit: () => void
+  onSummary: () => void
   onDelete: () => void
 }) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -172,9 +174,13 @@ function ActionMenu({
         <Download />
         下载
       </button>
-      <button onClick={onEdit}>
+      <button className="material-rename-action" onClick={onEdit}>
         <Pencil />
-        重命名 / 编辑
+        重命名
+      </button>
+      <button onClick={onSummary}>
+        <FileText />
+        编辑摘要
       </button>
       <button className="danger-text material-delete-action" onClick={onDelete}>
         <Trash2 />
@@ -198,6 +204,7 @@ export default function MaterialsPage({
   const [uploading, setUploading] = useState(false)
   const [queue, setQueue] = useState<File[]>([])
   const [expanded, setExpanded] = useState('')
+  const [summaryMaterial, setSummaryMaterial] = useState<Material>()
   const [deleting, setDeleting] = useState<Material>()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -225,6 +232,12 @@ export default function MaterialsPage({
   function closeMenu(action: () => void) {
     setMenu(undefined)
     action()
+  }
+  function editSummary(material: Material) {
+    if (!canCloseSummary()) return
+    if (window.matchMedia('(max-width: 640px)').matches)
+      setSummaryMaterial(material)
+    else setExpanded(material.id)
   }
   return (
     <section
@@ -261,7 +274,7 @@ export default function MaterialsPage({
       }}
     >
       <div className="materials-toolbar">
-        <h2>资料库</h2>
+        <h2>资料库 · {materials.length}</h2>
         {materials.length > 0 && (
           <button className="primary" onClick={() => setUploading(true)}>
             <UploadCloud />
@@ -296,6 +309,13 @@ export default function MaterialsPage({
         </div>
       ) : (
         <div className="materials-container">
+          <div className="materials-table-head" aria-hidden="true">
+            <span>文件</span>
+            <span>类型</span>
+            <span>更新时间</span>
+            <span>摘要</span>
+            <span />
+          </div>
           {groups.map((category) => {
             const items = visible.filter(
               (m) => (m.category || '其他') === category,
@@ -308,7 +328,7 @@ export default function MaterialsPage({
                 aria-label={category}
               >
                 {groups.length > 1 && <h3>{category}</h3>}
-                {items.map((m) => {
+                {items.map((m, index) => {
                   const Icon =
                     m.category === '证书' || m.category === '奖状'
                       ? Award
@@ -316,8 +336,20 @@ export default function MaterialsPage({
                         ? BriefcaseBusiness
                         : FileText
                   return (
-                    <article key={m.id} className="material-item">
-                      <div className="material-row">
+                    <article
+                      key={m.id}
+                      className={
+                        'material-item ' +
+                        (index % 2 === 0 ? 'row-odd' : 'row-even')
+                      }
+                    >
+                      <div
+                        className="material-row"
+                        onClick={(e) => {
+                          if (!(e.target as HTMLElement).closest('button'))
+                            onPreview(m)
+                        }}
+                      >
                         <button
                           className="material-open"
                           aria-label={'预览 ' + m.name}
@@ -328,12 +360,17 @@ export default function MaterialsPage({
                           </span>
                           <span className="material-info">
                             <strong title={m.name}>{m.name}</strong>
-                            <small>
-                              {m.category || '其他'} ·{' '}
-                              {new Date(m.date).toLocaleDateString('zh-CN')}
+                            <small className="material-mobile-meta">
+                              {m.category || '其他'} · {stamp(m.date)}
                             </small>
                           </span>
                         </button>
+                        <span className="material-type">
+                          {m.category || '其他'}
+                        </span>
+                        <time className="material-date" dateTime={m.date}>
+                          {stamp(m.date)}
+                        </time>
                         <button
                           className="material-summary-toggle"
                           title={m.summary || '添加摘要'}
@@ -416,6 +453,7 @@ export default function MaterialsPage({
                 setEditing(menu.material)
               })
           }}
+          onSummary={() => closeMenu(() => editSummary(menu.material))}
           onDelete={() =>
             closeMenu(() => {
               setError('')
@@ -423,6 +461,24 @@ export default function MaterialsPage({
             })
           }
         />
+      )}
+      {summaryMaterial && (
+        <Dialog
+          title={'编辑摘要 · ' + summaryMaterial.name}
+          onClose={() => setSummaryMaterial(undefined)}
+        >
+          <button className="outline material-summary-rename" onClick={() => {
+            if (!canCloseSummary()) return
+            setEditing(summaryMaterial)
+            setSummaryMaterial(undefined)
+          }}><Pencil/>重命名文件</button>
+          <SummaryEditor
+            material={summaryMaterial}
+            onDirty={reportDirty}
+            onCancel={() => setSummaryMaterial(undefined)}
+            onSave={(summary) => onSave({ ...summaryMaterial, summary })}
+          />
+        </Dialog>
       )}
       {(uploading || editing) && (
         <Dialog

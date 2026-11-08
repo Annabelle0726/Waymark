@@ -28,7 +28,7 @@
 ## 3. Content bounds and headings
 
 - Reading, form and settings content MUST have a 640–720px column cap. Prefer `--content-width-compact` (44rem / 704px). Individual fields and short sign-in forms may be narrower.
-- List content MUST be capped around 800px. Use 760–820px for editors; the document editor uses 50rem / 800px. Center the column or align it to the content start.
+- Editors use 760–820px; the document editor uses 50rem / 800px. Lists and tables follow the available space with 24–32px desktop gutters and an approximately 1100px maximum content width, aligned left with the breadcrumb. Avoid large blank margins on both sides of list pages.
 - Keep the primary action on the heading row at the column edge. A breadcrumb naming the page MUST NOT be followed by the same large title. If another heading is needed, use a compact heading sharing the action row, without an accent bar.
 - Keep the local-space indicator in one global location. MUST NOT repeat the privacy notice in each page footer.
 - Outside an intentional empty state, MUST NOT reserve a viewport-sized blank area. Size sections to their content.
@@ -40,7 +40,7 @@
 - Default card and panel padding MUST be 16–20px on desktop and 12–16px on mobile. Never exceed 24px. Lists and cards MUST have no shadow. Reserve light elevation for floating menus and dialogs; preserve visible keyboard focus independently.
 
 - For a materials table, align the column start with the breadcrumb, keep the upload action on its right edge and show the shared column header even for one file. Use 24–32px desktop page gutters. Ellipsize long filenames; provide the full name in the accessible label.
-- For striped tables, use the row tokens in the materials theme for odd/even, hover, selected, border, text and accent. Recompute stripes after filtering and restart per group. Use one container border and a header divider; MUST NOT outline every row. Check 4.5:1 text contrast on every row state.
+- For striped tables, use the shared :root row tokens in theme/tokens.css for odd/even, hover, selected, border, text and accent. Row backgrounds reference --row-bg-odd, --row-bg-even, --row-bg-hover and --row-bg-selected. Recompute stripes from visible rows after searching or filtering and restart per group. Use one container border and a header divider; MUST NOT outline every row. Material rows are 52–56px on desktop, with a header even for a single result. Check 4.5:1 text contrast on every row state.
 - At 640px and below, hide the table header and summary column, show type and date on a second line and move download into the menu. Sheet actions MUST be at least 48px high. A file deletion confirmation MUST name the file and explain that deletion is permanent.
 
 ## 5. Typography
@@ -98,7 +98,7 @@ Source inventory of 78 authored border-radius declarations across the base and f
 | Dialogs and menus | `layout.css` (.dialog): 13px. `theme/workspace.css` (job dialog): 18px desktop, 13px mobile. `theme/materials.css` (.document-preview): 14px, 0 on mobile. `theme/materials-library.css`: 8px menu. Mobile material and document menus use 16px top corners via a spacing token. |
 | Tags and badges | `layout.css`: status, skill and cover labels 5px; count 6px; environment badge 20px. `theme/auth.css`: feature chips 20px. Status dots at 50% are decorative markers. |
 
-- The materials table in `theme/materials-library.css` uses `--content-width-list` (68.75rem / 1100px) from `theme/tokens.css`. This exceeds the requested approximately 800px list target. Record it for a later layout change.
+- The materials table in `theme/materials-library.css` uses `--content-width-list` (68.75rem / 1100px) from `theme/tokens.css`, following the list-page bounds in section 3.
 - `layout.css` (.main-content) permits 1510px; job content needs its own narrower bound. `../app/App.tsx` renders a heading accent and repeats the local-storage footer on the jobs page.
 - `theme/workspace.css` adds a shadow to cards, swaps gradients on hover and puts bordered intake sections inside a bordered dialog. The screenshot delete control is 36px square.
 - `theme/tokens.css` defines only the 8px control radius. The older authentication guidance specified 28–32px desktop and 20px mobile padding; use the padding limits in section 4 for future changes. Existing literals, the authentication card, and mobile sheets using spacing tokens need migration after radius approval.
