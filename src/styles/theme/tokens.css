@@ -28,6 +28,10 @@
   --content-width-compact: 44rem;
   --content-width-list: 68.75rem;
   --border-width: 1px;
+  --scroll-rail: color-mix(in srgb, var(--pale) 82%, var(--blue));
+  --scroll-thumb: color-mix(in srgb, var(--blue) 78%, var(--ink));
+  --scroll-size: calc(var(--space-2) + 2 * var(--border-width));
+  --scroll-tip: calc(2 * var(--border-width));
   --radius-control: 0.5rem;
   --text-small: 0.8125rem;
   --text-body: 0.875rem;
