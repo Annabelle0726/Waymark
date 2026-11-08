@@ -8,7 +8,7 @@
 - Preserve the transparent mark's aspect ratio in `public/brand/mark.svg`. The sign-in landscape in `public/brand/mountain-sea.svg` MUST be decorative and carry no instructions.
 - On wide authentication screens, keep the landscape beside the form and a single light-blue translucent form surface. Use the existing segmented sign-in/register control, shared field outlines and blue primary action. MUST NOT add another frame or elevation to the form.
 
-- Authentication shell MUST stay within 1200px, with a 400–440px form where space permits. Center the landscape and form on one grid; place the local illustration below the brand copy. Align the segmented control to the form width. Center the submit label and arrow together and preserve the button size during loading. Use the existing 200ms ease-out feedback for the white selected segment, panel and errors, subject to the motion rules below.
+- Authentication shell MUST stay within 1200px, with a form up to 480px wide where space permits. Center the landscape and form on one grid; place the local illustration below the brand copy. Align the segmented control to the form width. Center the submit label and arrow together and preserve the button size during loading. Use the existing 200ms ease-out feedback for the white selected segment, panel and errors, subject to the motion rules below.
 
 ## 2. Corner radii
 
@@ -74,6 +74,7 @@
 - Transitions MUST use 150–200ms and `ease-out`. Explicitly list only the properties that change: transform, box-shadow, opacity, color or background-color. MUST NOT use `transition: all`.
 - For a gradient button, fade the opacity of an overlay. MUST NOT transition the gradient itself. Lift by at most 1px; other motion MUST stay within 3px and MUST NOT change layout.
 - Honor `prefers-reduced-motion: reduce`. Remove nonessential motion while preserving visible state changes.
+- Authentication mode changes use the requested two-stage card flip (180ms out, 240ms in), with a short opacity-only fallback for reduced motion. Keep the card inert while turning, retain the phone, clear passwords, then focus the first empty field. Never expose mirrored text or duplicate active forms.
 
 ## 8. Secondary and destructive actions
 

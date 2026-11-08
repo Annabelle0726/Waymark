@@ -19,12 +19,16 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
   const card = useRef<HTMLElement>(null)
   const content = useRef<HTMLDivElement>(null)
   const [sized, setSized] = useState(false)
+  const [flipping, setFlipping] = useState(false)
+  const switching = useRef(false)
+  const animation = useRef<Animation | null>(null)
+  useEffect(() => () => animation.current?.cancel(), [])
   useLayoutEffect(() => {
     const panel = card.current
     const inner = content.current
     if (!panel || !inner) return
     const resize = () => {
-      panel.style.height = inner.getBoundingClientRect().height + 2 + 'px'
+      panel.style.height = inner.offsetHeight + 2 + 'px'
     }
     resize()
     const observer = new ResizeObserver(resize)
@@ -61,19 +65,50 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
   const [name, setName] = useState('')
 
   useEffect(() => {
+    if (flipping) return
     const firstEmpty = Array.from(
       content.current?.querySelectorAll<HTMLInputElement>('input') || [],
     ).find((input) => !input.value)
     firstEmpty?.focus({ preventScroll: true })
-  }, [register])
+  }, [register, flipping])
 
-  function switchMode(next: boolean) {
-    if (submitting || register === next) return
-    setRegister(next)
-    setPassword('')
-    setConfirm('')
-    setVisible(false)
-    setConfirmVisible(false)
+  async function switchMode(next: boolean) {
+    const panel = card.current
+    if (!panel || submitting || switching.current || register === next) return
+    switching.current = true
+    setFlipping(true)
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const direction = next ? -1 : 1
+    const turn = (angle: number) => `perspective(1200px) rotateY(${angle * direction}deg)`
+    try {
+      animation.current = panel.animate(
+        reduced ? [{ opacity: 1 }, { opacity: 0 }] :
+          [{ transform: turn(0), opacity: 1 }, { transform: turn(85), opacity: 0 }],
+        { duration: reduced ? 75 : 180, easing: 'ease-in', fill: 'forwards' },
+      )
+      await animation.current.finished
+      setRegister(next)
+      setPassword('')
+      setConfirm('')
+      setVisible(false)
+      setConfirmVisible(false)
+      // Wait for the new content and its measured height before revealing it.
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+      if (!panel.isConnected) return
+      animation.current.cancel()
+      animation.current = panel.animate(
+        reduced ? [{ opacity: 0 }, { opacity: 1 }] :
+          [{ transform: turn(-85), opacity: 0 }, { transform: turn(0), opacity: 1 }],
+        { duration: reduced ? 75 : 240, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' },
+      )
+      await animation.current.finished
+      animation.current.cancel()
+    } catch {
+      // Cancellation is expected when authentication unmounts the page.
+    } finally {
+      switching.current = false
+      if (panel.isConnected) setFlipping(false)
+    }
   }
 
   return (
@@ -129,13 +164,15 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
               .filter(Boolean)
               .join(' ')}
             aria-labelledby="auth-title"
+            aria-busy={flipping}
+            inert={flipping}
           >
             <div ref={content} className="auth-card-content">
               <nav className="auth-tabs" aria-label="账号入口">
                 <button
                   type="button"
                   aria-current={!register ? 'page' : undefined}
-                  disabled={submitting}
+                  disabled={submitting || flipping}
                   onClick={() => switchMode(false)}
                 >
                   登录
@@ -143,7 +180,7 @@ export function Auth({ onUser }: { onUser: (u: User) => Promise<void> }) {
                 <button
                   type="button"
                   aria-current={register ? 'page' : undefined}
-                  disabled={submitting}
+                  disabled={submitting || flipping}
                   onClick={() => switchMode(true)}
                 >
                   注册

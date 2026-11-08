@@ -181,7 +181,7 @@
   position: relative;
   isolation: isolate;
   width: 100%;
-  max-width: 440px;
+  max-width: var(--auth-card-width);
   justify-self: end;
   min-width: 0;
   overflow: hidden;
@@ -673,7 +673,7 @@
     border-radius: 17px;
   }
   .auth-card-content {
-    padding: 20px;
+    padding: var(--space-5) var(--space-4);
   }
   .auth-tabs {
     margin-bottom: 18px;
