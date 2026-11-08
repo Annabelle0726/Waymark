@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/images/waymark-cover.svg" width="100%" alt="Waymark 个人求职工作空间，山海与航标封面。">
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset="docs/images/waymark-tour.png">
+    <img src="docs/images/waymark-tour.gif" width="100%" alt="Waymark 操作演示：选择招聘来源，填写匿名岗位及技能要求，确认保存后在侧栏查看投递状态。">
+  </picture>
 </p>
 <p align="center">
   <img src="docs/images/tech-typescript.svg" alt="TypeScript" height="34">
