@@ -16,7 +16,14 @@
 
 第一次打开先注册或登录，进入的是自己的空工作区。收录岗位、识别截图、写笔记和管理简历都可以在本机完成。想先试用，可以直接跳到[本地启动](#本地启动)。
 
-以下四张图来自实际运行的 Waymark，使用独立演示数据。图中的公司名均以实心块代替。
+## 岗位录入演示
+
+<picture>
+  <source media="(prefers-reduced-motion: reduce)" srcset="docs/images/waymark-tour.png">
+  <img src="docs/images/waymark-tour.gif" width="100%" alt="选择招聘来源，填写岗位信息，保存后在侧栏查看投递状态。">
+</picture>
+
+动图和下方四张截图均来自实际运行的 Waymark，使用独立演示数据。图中的公司名均以实心块代替。
 
 ## 从岗位原文开始
 
